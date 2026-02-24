@@ -9,6 +9,20 @@ module.exports = async function handler(req, res) {
 
   try {
     const supabase = getSupabase();
+
+    // Return latest waking entry
+    if (type === 'waking') {
+      const { data, error } = await supabase
+        .from('waking_entries')
+        .select('id, tweet1, tweet2, day_number, posted_at')
+        .eq('status', 'posted')
+        .order('posted_at', { ascending: false })
+        .limit(parseInt(limit));
+
+      if (error) throw error;
+      return res.status(200).json({ waking: data || [] });
+    }
+
     let query = supabase
       .from('journal_entries')
       .select('id, text, tier, is_core_memory, ai_response, created_at, day_number, tx_hash')
