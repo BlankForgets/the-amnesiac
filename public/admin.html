@@ -23,6 +23,37 @@
     --orange: #9a7040;
     --border: #1a1820;
     --border-mid: #24202e;
+    --heading: #e8e2d8;
+    --btn-hover-text: #09090c;
+    --alert-success-bg: rgba(90,138,96,0.08);
+    --alert-error-bg: rgba(138,72,72,0.08);
+    --alert-info-bg: rgba(139,127,181,0.08);
+    --nav-hover-bg: rgba(139,127,181,0.05);
+    --nav-active-bg: rgba(139,127,181,0.07);
+  }
+
+  [data-theme="light"] {
+    --bg: #f4f1ec;
+    --bg2: #ffffff;
+    --bg3: #eae6df;
+    --text: #3a3530;
+    --text-dim: #7a746a;
+    --text-faint: #b5ae9f;
+    --accent: #6b5ea0;
+    --accent-dim: #a99dd0;
+    --gold: #9a7a40;
+    --green: #3a7a42;
+    --red: #a04040;
+    --orange: #8a6030;
+    --border: #ddd8cf;
+    --border-mid: #ccc6ba;
+    --heading: #1a1510;
+    --btn-hover-text: #ffffff;
+    --alert-success-bg: rgba(58,122,66,0.08);
+    --alert-error-bg: rgba(160,64,64,0.08);
+    --alert-info-bg: rgba(107,94,160,0.08);
+    --nav-hover-bg: rgba(107,94,160,0.06);
+    --nav-active-bg: rgba(107,94,160,0.1);
   }
 
   body {
@@ -48,7 +79,7 @@
   #loginScreen h1 {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
-    color: #e8e2d8;
+    color: var(--heading);
     margin-bottom: 8px;
   }
 
@@ -105,7 +136,7 @@
   .sidebar-head .day {
     font-size: 20px;
     font-family: 'Playfair Display', serif;
-    color: #e8e2d8;
+    color: var(--heading);
     margin-top: 4px;
   }
 
@@ -146,8 +177,8 @@
     border-left: 2px solid transparent;
   }
 
-  .nav-btn:hover { color: var(--text); background: rgba(139,127,181,0.05); }
-  .nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: rgba(139,127,181,0.07); }
+  .nav-btn:hover { color: var(--text); background: var(--nav-hover-bg); }
+  .nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: var(--nav-active-bg); }
 
   .nav-badge {
     margin-left: auto;
@@ -175,7 +206,7 @@
   .panel-title {
     font-family: 'Playfair Display', serif;
     font-size: 22px;
-    color: #e8e2d8;
+    color: var(--heading);
     margin-bottom: 6px;
   }
 
@@ -260,23 +291,23 @@
   }
 
   .btn-approve { color: var(--green); border-color: var(--green); }
-  .btn-approve:hover { background: var(--green); color: var(--bg); }
+  .btn-approve:hover { background: var(--green); color: var(--btn-hover-text); }
 
   .btn-reject { color: var(--red); border-color: var(--red); }
-  .btn-reject:hover { background: var(--red); color: #fff; }
+  .btn-reject:hover { background: var(--red); color: var(--btn-hover-text); }
 
   .btn-respond { color: var(--accent); border-color: var(--accent-dim); }
-  .btn-respond:hover { background: var(--accent); color: var(--bg); }
+  .btn-respond:hover { background: var(--accent); color: var(--btn-hover-text); }
 
   .btn-post { color: var(--gold); border-color: var(--gold); }
-  .btn-post:hover { background: var(--gold); color: var(--bg); }
+  .btn-post:hover { background: var(--gold); color: var(--btn-hover-text); }
 
   .btn-delete { color: var(--text-faint); border-color: var(--border-mid); }
   .btn-delete:hover { color: var(--red); border-color: var(--red); }
 
   .btn-primary {
     background: var(--accent);
-    color: var(--bg);
+    color: var(--btn-hover-text);
     border-color: var(--accent);
     padding: 10px 24px;
     font-size: 11px;
@@ -394,7 +425,7 @@
   .stat-num {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
-    color: #e8e2d8;
+    color: var(--heading);
     line-height: 1;
     margin-bottom: 4px;
   }
@@ -462,9 +493,9 @@
     border-left: 3px solid;
   }
 
-  .alert-success { border-color: var(--green); color: var(--green); background: rgba(90,138,96,0.08); }
-  .alert-error { border-color: var(--red); color: var(--red); background: rgba(138,72,72,0.08); }
-  .alert-info { border-color: var(--accent); color: var(--accent); background: rgba(139,127,181,0.08); }
+  .alert-success { border-color: var(--green); color: var(--green); background: var(--alert-success-bg); }
+  .alert-error { border-color: var(--red); color: var(--red); background: var(--alert-error-bg); }
+  .alert-info { border-color: var(--accent); color: var(--accent); background: var(--alert-info-bg); }
 
   /* LOADING */
   .loading {
@@ -481,6 +512,31 @@
     text-align: center;
     font-size: 12px;
   }
+
+  /* THEME TOGGLE */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    width: 100%;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: all 0.15s;
+  }
+
+  .theme-toggle:hover { color: var(--text); background: var(--nav-hover-bg); }
+  .theme-toggle svg { flex-shrink: 0; }
 
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; }
@@ -542,6 +598,11 @@
         Queue <span class="nav-badge green" id="queueBadge">0</span>
       </button>
     </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">
+      <svg id="sunIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span id="themeLabel">Light Mode</span>
+    </button>
   </div>
 
   <!-- MAIN -->
@@ -958,6 +1019,36 @@
       </div>
     `).join('');
   }
+
+  // ── THEME ──────────────────────────────────────────────
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const newTheme = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('admin-theme', newTheme);
+    updateThemeLabel(newTheme);
+  }
+
+  function updateThemeLabel(theme) {
+    const label = document.getElementById('themeLabel');
+    const sun = document.getElementById('sunIcon');
+    if (theme === 'light') {
+      label.textContent = 'Dark Mode';
+      sun.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+    } else {
+      label.textContent = 'Light Mode';
+      sun.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    }
+  }
+
+  // Apply saved theme on load
+  (function() {
+    const saved = localStorage.getItem('admin-theme');
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeLabel(saved);
+    }
+  })();
 
   // ── UTILS ──────────────────────────────────────────────
   function escHtml(s) {
