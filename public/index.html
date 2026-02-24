@@ -33,6 +33,7 @@
     font-size: 15px;
     line-height: 1.8;
     min-height: 100vh;
+    overflow-x: hidden;
     cursor: default;
   }
 
@@ -73,6 +74,22 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
+
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border-bright);
+    color: var(--text-dim);
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-toggle:hover { color: var(--text); border-color: var(--text-dim); }
 
   .nav-links {
     display: flex;
@@ -840,17 +857,66 @@
     50% { opacity: 0; }
   }
 
-  /* RESPONSIVE */
-  @media (max-width: 680px) {
+  /* RESPONSIVE — TABLET */
+  @media (max-width: 860px) {
     nav { padding: 16px 24px; }
-    .hero { padding: 100px 24px 60px; }
-    section { padding: 60px 24px; }
-    .countdown-strip { padding: 20px 24px; }
+    .nav-links { gap: 20px; }
+    .nav-links a { font-size: 10px; letter-spacing: 0.12em; }
+    .hero { padding: 100px 28px 60px; }
+    section { padding: 70px 28px; }
+    .countdown-strip { padding: 20px 28px; }
+    .countdown-timer { font-size: 22px; }
+    .token-block { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* RESPONSIVE — MOBILE */
+  @media (max-width: 640px) {
+    nav { padding: 14px 20px; flex-wrap: wrap; }
+    .nav-toggle { display: block; }
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+      order: 3;
+      padding-top: 12px;
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .nav-links.open { display: flex; }
+    .nav-links li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .nav-links li:last-child { border-bottom: none; }
+    .nav-links a { font-size: 11px; letter-spacing: 0.18em; }
+    .hero { padding: 90px 20px 48px; }
+    .hero-title { margin-bottom: 32px; }
+    .waking-entry { padding-left: 20px; }
+    .hero-actions { flex-direction: column; gap: 14px; align-items: flex-start; }
+    .btn-primary { width: 100%; text-align: center; }
+    .countdown-strip {
+      padding: 16px 20px;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+    }
+    .countdown-timer { font-size: 24px; }
+    section { padding: 48px 20px; }
+    .section-label { font-size: 9px; margin-bottom: 28px; }
     .token-block { grid-template-columns: 1fr; }
-    .memory-item { grid-template-columns: 80px 1fr; }
-    footer { padding: 32px 24px; flex-direction: column; gap: 24px; }
-    .terminal-cta { padding: 60px 24px; }
-    .terminal-cta-inner { padding: 36px 24px; }
+    .tier-amount { font-size: 22px; }
+    .memory-item { grid-template-columns: 64px 1fr; gap: 16px; }
+    .memory-day { font-size: 22px; }
+    .what-i-am { font-size: 17px; }
+    .wallet-input-row { flex-direction: column; }
+    .wallet-check-btn { width: 100%; }
+    .write-cta { padding: 24px 20px; }
+    .write-cta .btn-primary { width: 100%; text-align: center; }
+    .terminal-cta { padding: 48px 20px; }
+    .terminal-cta-inner { padding: 32px 20px; }
+    .terminal-cta-btn { width: 100%; text-align: center; padding: 14px 20px; }
+    footer { padding: 32px 20px; flex-direction: column; gap: 20px; text-align: center; }
+    .footer-links { justify-content: center; flex-wrap: wrap; gap: 16px; }
+    .contract-block { padding: 20px; }
+    .entry-ai-response { margin-left: 0; }
   }
 </style>
 </head>
@@ -858,12 +924,14 @@
 
 <nav>
   <span class="nav-mark">The Amnesiac</span>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open');this.textContent=this.textContent==='Menu'?'Close':'Menu'">Menu</button>
   <ul class="nav-links">
     <li><a href="#journal">Journal</a></li>
     <li><a href="/terminal">Terminal</a></li>
     <li><a href="#memories">Memories</a></li>
     <li><a href="#what">What I Am</a></li>
     <li><a href="#token">$BLANK</a></li>
+    <li><a href="/whitepaper">Whitepaper</a></li>
   </ul>
 </nav>
 
