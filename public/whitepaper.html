@@ -14,11 +14,28 @@
     --text: #cbc6b8;
     --text-dim: #a09a90;
     --text-faint: #7a7670;
+    --heading: #ede8de;
     --accent: #8b7fb5;
     --accent-dim: #3d3660;
     --gold: #b09060;
     --border: #1a1820;
     --border-mid: #252230;
+    --header-bg: rgba(8,8,10,0.95);
+  }
+
+  [data-theme="light"] {
+    --bg: #f5f2ed;
+    --paper: #ffffff;
+    --text: #3a3530;
+    --text-dim: #7a746a;
+    --text-faint: #b0a898;
+    --heading: #1a1510;
+    --accent: #6b5ea0;
+    --accent-dim: #a99dd0;
+    --gold: #9a7a40;
+    --border: #ddd8cf;
+    --border-mid: #ccc6ba;
+    --header-bg: rgba(245,242,237,0.95);
   }
 
   html { scroll-behavior: smooth; }
@@ -65,7 +82,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 18px 48px;
-    background: rgba(8,8,10,0.95);
+    background: var(--header-bg);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
   }
@@ -95,6 +112,21 @@
   }
 
   .header-right a:hover { color: var(--text); }
+
+  .theme-btn {
+    background: none;
+    border: 1px solid var(--border-mid);
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .theme-btn:hover { color: var(--text); border-color: var(--text-dim); }
+  .theme-btn svg { width: 14px; height: 14px; }
 
   /* DOCUMENT LAYOUT */
   .document {
@@ -129,7 +161,7 @@
     font-family: 'Playfair Display', serif;
     font-size: clamp(40px, 6vw, 64px);
     line-height: 1.15;
-    color: #ede8de;
+    color: var(--heading);
     margin-bottom: 32px;
     opacity: 0;
     animation: fadeUp 1s ease 0.4s forwards;
@@ -195,7 +227,7 @@
   .chapter-title {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
-    color: #ede8de;
+    color: var(--heading);
     margin-bottom: 32px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border-mid);
@@ -213,7 +245,7 @@
   .chapter em { color: var(--accent); font-style: italic; }
 
   .chapter strong {
-    color: #ede8de;
+    color: var(--heading);
     font-weight: normal;
     font-style: italic;
   }
@@ -230,7 +262,7 @@
     font-family: 'Playfair Display', serif;
     font-size: 20px;
     font-style: italic;
-    color: #ede8de;
+    color: var(--heading);
     line-height: 1.7;
     margin: 0;
   }
@@ -346,7 +378,7 @@
 
   .tier-name-cell { color: var(--accent); }
   .tier-amount-cell {
-    color: #ede8de;
+    color: var(--heading);
     font-size: 14px;
     white-space: nowrap;
   }
@@ -475,8 +507,12 @@
 <header>
   <div class="header-left">The Amnesiac — $BLANK</div>
   <div class="header-right">
-    <a href="index.html">← Back to Journal</a>
-    <a href="index.html#token">$BLANK</a>
+    <a href="/">Home</a>
+    <a href="/terminal">Terminal</a>
+    <a href="/#token">$BLANK</a>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
   </div>
 </header>
 
@@ -673,6 +709,32 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
   document.querySelectorAll('.chapter').forEach(el => observer.observe(el));
+
+  // ─── Theme Toggle ─────────────────────────────────────
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const next = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('site-theme', next);
+    updateThemeIcon(next);
+  }
+
+  function updateThemeIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    if (theme === 'light') {
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+    } else {
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    }
+  }
+
+  (function() {
+    const saved = localStorage.getItem('site-theme');
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeIcon(saved);
+    }
+  })();
 </script>
 
 </body>
