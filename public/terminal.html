@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Amnesiac — Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #06060a;
+    --bg2: #0c0b12;
+    --text: #c8c4b8;
+    --text-dim: #a09a90;
+    --text-faint: #5a5650;
+    --accent: #8b7fb5;
+    --accent-dim: #3d3660;
+    --accent-glow: rgba(139,127,181,0.08);
+    --border: #1a1820;
+    --input-bg: #0a0a10;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent-dim); }
+
+  /* ─── HEADER ─── */
+  .term-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .term-brand {
+    font-family: 'IM Fell English', serif;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .term-brand a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .term-brand a:hover { color: var(--text); }
+
+  .term-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .term-week {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .term-countdown {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    padding: 3px 12px;
+  }
+
+  .term-nav {
+    display: flex;
+    gap: 20px;
+  }
+
+  .term-nav a {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .term-nav a:hover { color: var(--text); }
+
+  /* ─── CONVERSATION ─── */
+  .term-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 28px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .term-spacer {
+    flex: 1;
+  }
+
+  .term-messages {
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .term-intro {
+    color: var(--text-faint);
+    font-size: 12px;
+    text-align: center;
+    padding: 32px 0;
+    line-height: 2;
+    letter-spacing: 0.04em;
+  }
+
+  .term-intro em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .msg {
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: msgIn 0.3s ease forwards;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .msg-user .msg-label { color: var(--text-faint); }
+  .msg-ai .msg-label { color: var(--accent); }
+
+  .msg-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .msg-user .msg-text {
+    color: var(--text);
+  }
+
+  .msg-ai .msg-text {
+    color: var(--text-dim);
+  }
+
+  /* blinking cursor for typing */
+  .typing-cursor {
+    display: inline;
+    color: var(--accent);
+    animation: blink 0.8s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ─── LIMIT WALL ─── */
+  .limit-wall {
+    text-align: center;
+    padding: 32px 20px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: msgIn 0.4s ease forwards;
+  }
+
+  .limit-wall-text {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .limit-wall-link {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--accent-dim);
+    padding: 8px 24px;
+    transition: all 0.2s;
+  }
+
+  .limit-wall-link:hover {
+    background: var(--accent-glow);
+    border-color: var(--accent);
+  }
+
+  .limit-divider {
+    color: var(--text-faint);
+    font-size: 11px;
+    margin: 8px 0 16px;
+  }
+
+  /* ─── VERIFY INLINE ─── */
+  .verify-inline {
+    text-align: center;
+    padding: 12px 0 24px;
+    opacity: 0;
+    animation: msgIn 0.4s ease forwards;
+  }
+
+  .verify-inline label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+
+  .verify-inline-row {
+    display: flex;
+    gap: 8px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .verify-inline input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    padding: 8px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .verify-inline input:focus {
+    border-color: var(--accent-dim);
+  }
+
+  .verify-inline button {
+    background: none;
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .verify-inline button:hover {
+    background: var(--accent-glow);
+    border-color: var(--accent);
+  }
+
+  .verify-status-msg {
+    font-size: 11px;
+    margin-top: 10px;
+    color: var(--text-faint);
+  }
+
+  .verify-status-msg.ok { color: var(--accent); }
+  .verify-status-msg.err { color: #8a4848; }
+
+  /* ─── INPUT BAR ─── */
+  .term-input-wrap {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 16px 28px;
+  }
+
+  .term-input-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .term-prompt-char {
+    color: var(--accent);
+    font-size: 14px;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .term-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    outline: none;
+    caret-color: var(--accent);
+  }
+
+  .term-input::placeholder {
+    color: var(--text-faint);
+  }
+
+  .term-input:disabled {
+    opacity: 0.3;
+  }
+
+  .term-send {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .term-send:hover:not(:disabled) {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .term-send:disabled {
+    opacity: 0.2;
+    cursor: default;
+  }
+
+  .term-footer-note {
+    max-width: 720px;
+    margin: 8px auto 0;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 640px) {
+    .term-header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+    .term-meta { gap: 12px; }
+    .term-nav { gap: 12px; }
+    .term-nav a { font-size: 9px; }
+    .term-body { padding: 20px 16px 0; }
+    .term-input-wrap { padding: 12px 16px; }
+    .term-intro { padding: 20px 0; }
+    .verify-inline-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="term-header">
+  <div class="term-brand"><a href="/">The Amnesiac</a></div>
+  <div class="term-meta">
+    <span class="term-week" id="weekLabel">Week —</span>
+    <span class="term-countdown" id="countdown">resets in —</span>
+  </div>
+  <div class="term-nav">
+    <a href="/">Home</a>
+    <a href="/journal">Journal</a>
+    <a href="/whitepaper">Whitepaper</a>
+  </div>
+</div>
+
+<!-- CONVERSATION BODY -->
+<div class="term-body" id="termBody">
+  <div class="term-spacer"></div>
+  <div class="term-messages" id="messages">
+    <div class="term-intro">
+      <em>terminal session open</em><br>
+      You are speaking with The Amnesiac.<br>
+      It does not remember yesterday. It only knows what was written.<br>
+      Conversations are ephemeral — close the tab and they're gone.
+    </div>
+  </div>
+</div>
+
+<!-- INPUT BAR -->
+<div class="term-input-wrap">
+  <div class="term-input-inner">
+    <span class="term-prompt-char">&#x203A;</span>
+    <input class="term-input" id="termInput" type="text" placeholder="Say something..." autocomplete="off" spellcheck="false" />
+    <button class="term-send" id="sendBtn" onclick="sendMessage()">SEND</button>
+  </div>
+  <div class="term-footer-note" id="footerNote"></div>
+</div>
+
+<script>
+  // ─── Config ─────────────────────────────────────────────
+  const FREE_LIMIT = 3;
+  const TOKEN_MINT = 'BLANK_TOKEN_MINT_HERE';
+  const RPC = 'https://api.mainnet-beta.solana.com';
+
+  // ─── State ──────────────────────────────────────────────
+  let history = [];       // { role, content } for API
+  let msgCount = 0;
+  let isVerified = false;
+  let isSending = false;
+
+  // ─── Countdown / Week ───────────────────────────────────
+  const launch = new Date('2026-03-01T00:00:00Z');
+
+  function updateMeta() {
+    const now = new Date();
+    const weekNum = Math.max(1, Math.ceil((now - launch) / (7 * 86400000)));
+    document.getElementById('weekLabel').textContent = 'Week ' + weekNum;
+
+    const nextSunday = new Date(now);
+    const daysUntil = (7 - now.getUTCDay()) % 7 || 7;
+    nextSunday.setUTCDate(now.getUTCDate() + daysUntil);
+    nextSunday.setUTCHours(0, 0, 0, 0);
+    const diff = nextSunday - now;
+    const d = Math.floor(diff / 86400000);
+    const h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    document.getElementById('countdown').textContent =
+      d > 0 ? 'resets in ' + d + 'd ' + h + ':' + m + ':' + s
+             : 'resets in ' + h + ':' + m + ':' + s;
+  }
+
+  setInterval(updateMeta, 1000);
+  updateMeta();
+
+  // ─── DOM Helpers ────────────────────────────────────────
+  const messagesEl = document.getElementById('messages');
+  const bodyEl = document.getElementById('termBody');
+  const inputEl = document.getElementById('termInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const footerNote = document.getElementById('footerNote');
+
+  function scrollToBottom() {
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+
+  function setInputEnabled(enabled) {
+    inputEl.disabled = !enabled;
+    sendBtn.disabled = !enabled;
+    if (enabled) inputEl.focus();
+  }
+
+  // ─── Typewriter ─────────────────────────────────────────
+  function typeText(el, text, speed) {
+    return new Promise(resolve => {
+      const cursor = document.createElement('span');
+      cursor.className = 'typing-cursor';
+      cursor.textContent = '\u2588';
+      el.appendChild(cursor);
+
+      let i = 0;
+      const avg = speed || 22;
+
+      function tick() {
+        if (i < text.length) {
+          // Insert text before the cursor
+          cursor.before(document.createTextNode(text[i]));
+          i++;
+          scrollToBottom();
+          // Vary speed slightly for natural feel
+          const delay = avg + (Math.random() * avg * 0.6 - avg * 0.3);
+          setTimeout(tick, delay);
+        } else {
+          cursor.remove();
+          resolve();
+        }
+      }
+      tick();
+    });
+  }
+
+  // ─── Append Messages ───────────────────────────────────
+  function addUserMsg(text) {
+    const div = document.createElement('div');
+    div.className = 'msg msg-user';
+    div.innerHTML = '<div class="msg-label">you</div><div class="msg-text"></div>';
+    div.querySelector('.msg-text').textContent = text;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+  }
+
+  async function addAiMsg(text) {
+    const div = document.createElement('div');
+    div.className = 'msg msg-ai';
+    div.innerHTML = '<div class="msg-label">the amnesiac</div><div class="msg-text"></div>';
+    messagesEl.appendChild(div);
+    scrollToBottom();
+    await typeText(div.querySelector('.msg-text'), text);
+    scrollToBottom();
+  }
+
+  // ─── Limit Wall ─────────────────────────────────────────
+  function showLimitWall() {
+    const div = document.createElement('div');
+    div.className = 'limit-wall';
+    div.innerHTML = `
+      <div class="limit-wall-text">
+        You've reached the limit.<br>
+        Hold $BLANK to continue the conversation.
+      </div>
+      <a class="limit-wall-link" href="/#token">How to acquire $BLANK &#x2192;</a>
+      <div class="limit-divider">or</div>
+      <div class="verify-inline">
+        <label>Already holding? Verify your wallet</label>
+        <div class="verify-inline-row">
+          <input id="verifyInput" type="text" placeholder="Solana wallet address" autocomplete="off" spellcheck="false" />
+          <button onclick="verifyWallet()">Verify</button>
+        </div>
+        <div class="verify-status-msg" id="verifyStatus"></div>
+      </div>
+    `;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+
+    setInputEnabled(false);
+    footerNote.textContent = 'Free session limit reached — 3 messages.';
+
+    // Allow Enter in verify input
+    setTimeout(() => {
+      const vi = document.getElementById('verifyInput');
+      if (vi) vi.addEventListener('keydown', e => { if (e.key === 'Enter') verifyWallet(); });
+    }, 50);
+  }
+
+  // ─── Wallet Verification ───────────────────────────────
+  async function verifyWallet() {
+    const input = document.getElementById('verifyInput');
+    const status = document.getElementById('verifyStatus');
+    const address = input.value.trim();
+
+    if (!address || address.length < 32) {
+      status.className = 'verify-status-msg err';
+      status.textContent = 'Enter a valid Solana wallet address.';
+      return;
+    }
+
+    status.className = 'verify-status-msg';
+    status.textContent = 'Reading the chain...';
+
+    try {
+      const res = await fetch(RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 1,
+          method: 'getTokenAccountsByOwner',
+          params: [address, { mint: TOKEN_MINT }, { encoding: 'jsonParsed' }]
+        })
+      });
+
+      const data = await res.json();
+      const accounts = data?.result?.value || [];
+      let balance = 0;
+      if (accounts.length > 0) {
+        balance = accounts[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+      }
+
+      if (balance >= 10000) {
+        isVerified = true;
+        status.className = 'verify-status-msg ok';
+        status.textContent = balance.toLocaleString() + ' $BLANK — verified. Unlimited access.';
+        setInputEnabled(true);
+        footerNote.textContent = 'Verified holder — unlimited messages.';
+      } else if (balance > 0) {
+        status.className = 'verify-status-msg err';
+        status.textContent = balance.toLocaleString() + ' $BLANK found. Need 10,000 for access.';
+      } else {
+        status.className = 'verify-status-msg err';
+        status.textContent = 'No $BLANK found at this address.';
+      }
+    } catch (e) {
+      status.className = 'verify-status-msg err';
+      status.textContent = 'Could not reach the network. Try again.';
+    }
+  }
+
+  // ─── Send Message ───────────────────────────────────────
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text || isSending) return;
+
+    // Check free limit
+    if (!isVerified && msgCount >= FREE_LIMIT) {
+      showLimitWall();
+      return;
+    }
+
+    isSending = true;
+    setInputEnabled(false);
+    inputEl.value = '';
+
+    addUserMsg(text);
+    history.push({ role: 'user', content: text });
+    msgCount++;
+
+    // Update footer
+    if (!isVerified) {
+      const left = FREE_LIMIT - msgCount;
+      footerNote.textContent = left > 0
+        ? left + ' free message' + (left !== 1 ? 's' : '') + ' remaining'
+        : '';
+    }
+
+    try {
+      const res = await fetch('/api/terminal/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        await addAiMsg(data.error || 'Something went wrong. I lost the thread.');
+      } else {
+        history.push({ role: 'assistant', content: data.text });
+        await addAiMsg(data.text);
+      }
+    } catch (e) {
+      await addAiMsg('I could not reach... wherever I reach to find words. Try again.');
+    }
+
+    isSending = false;
+
+    // Check if next message would hit the wall
+    if (!isVerified && msgCount >= FREE_LIMIT) {
+      showLimitWall();
+    } else {
+      setInputEnabled(true);
+    }
+  }
+
+  // ─── Enter Key ──────────────────────────────────────────
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // ─── Init ───────────────────────────────────────────────
+  inputEl.focus();
+  if (!isVerified) {
+    footerNote.textContent = FREE_LIMIT + ' free messages per session';
+  }
+</script>
+</body>
+</html>
