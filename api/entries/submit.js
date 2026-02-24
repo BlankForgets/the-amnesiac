@@ -93,6 +93,8 @@ module.exports = async function handler(req, res) {
 
     // 5. Save to database
     const supabase = getSupabase();
+    const _now = new Date();
+    const _dayNum = Math.max(1, Math.floor((Date.UTC(_now.getUTCFullYear(), _now.getUTCMonth(), _now.getUTCDate()) - Date.UTC(2026, 2, 1)) / 86400000) + 1);
     const { data, error } = await supabase
       .from('journal_entries')
       .insert({
@@ -102,7 +104,7 @@ module.exports = async function handler(req, res) {
         balance,
         is_core_memory: is_core_memory && tier === 3,
         status: 'pending', // pending | approved | rejected
-        day_number: Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000))
+        day_number: _dayNum
       })
       .select()
       .single();

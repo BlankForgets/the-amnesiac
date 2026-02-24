@@ -24,7 +24,8 @@ module.exports = async function handler(req, res) {
 
   try {
     const supabase = getSupabase();
-    const dayNum = Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
+    const now = new Date();
+    const dayNum = Math.max(1, Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - Date.UTC(2026, 2, 1)) / 86400000) + 1);
 
     // Fetch today's approved journal entries
     const { data: entries } = await supabase
@@ -59,7 +60,8 @@ module.exports = async function handler(req, res) {
       messages: cleaned
     });
 
-    const text = result.content[0].text.trim();
+    const text = result.content?.[0]?.text?.trim();
+    if (!text) throw new Error('Empty response from AI');
     return res.status(200).json({
       text,
       mind_status: {

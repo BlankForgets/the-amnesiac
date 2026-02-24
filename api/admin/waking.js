@@ -10,7 +10,8 @@ module.exports = async function handler(req, res) {
 
   const { action } = req.body || {};
   const supabase = getSupabase();
-  const dayNum = Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
+  const now = new Date();
+  const dayNum = Math.max(1, Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - Date.UTC(2026, 2, 1)) / 86400000) + 1);
 
   if (action === 'ai_draft') {
     try {
@@ -37,7 +38,8 @@ module.exports = async function handler(req, res) {
         }]
       });
 
-      const raw = result.content[0].text.trim();
+      const raw = result.content?.[0]?.text?.trim();
+      if (!raw) throw new Error('Empty response from AI');
       // Parse JSON from response (handle markdown code blocks)
       const jsonStr = raw.replace(/```json?\s*/g, '').replace(/```/g, '').trim();
       const draft = JSON.parse(jsonStr);

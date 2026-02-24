@@ -79,7 +79,8 @@ module.exports = async function handler(req, res) {
           }]
         });
 
-        const responseText = result.content[0].text.trim();
+        const responseText = result.content?.[0]?.text?.trim();
+        if (!responseText) throw new Error('Empty response from AI');
 
         const { error: updateErr } = await supabase
           .from('journal_entries')

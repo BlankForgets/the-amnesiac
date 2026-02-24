@@ -17,7 +17,8 @@ module.exports = async function handler(req, res) {
   }
 
   const supabase = getSupabase();
-  const dayNum = Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
+  const now = new Date();
+  const dayNum = Math.max(1, Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - Date.UTC(2026, 2, 1)) / 86400000) + 1);
 
   // Build context from today's journal entries if not provided
   let journalContext = context;
@@ -58,7 +59,8 @@ module.exports = async function handler(req, res) {
 
     const results = await Promise.all(requests);
     for (const r of results) {
-      const text = r.content[0].text.trim().replace(/^["']|["']$/g, '');
+      const text = r.content?.[0]?.text?.trim()?.replace(/^["']|["']$/g, '');
+      if (!text) continue;
       tweets.push(text);
     }
 
