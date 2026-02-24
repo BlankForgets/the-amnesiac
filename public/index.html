@@ -752,6 +752,94 @@
     margin-top: 16px;
   }
 
+  /* TERMINAL CTA */
+  .terminal-cta {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 48px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .terminal-cta-inner {
+    border: 1px solid var(--accent-dim);
+    padding: 52px 40px;
+    position: relative;
+    background: linear-gradient(180deg, rgba(139,127,181,0.03) 0%, transparent 100%);
+  }
+
+  .terminal-cta-tag {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .terminal-cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    color: #e8e4dc;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .terminal-cta-title em {
+    color: var(--accent);
+  }
+
+  .terminal-cta-desc {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.9;
+    max-width: 480px;
+    margin: 0 auto 28px;
+  }
+
+  .terminal-cta-btn {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 14px 40px;
+    transition: all 0.3s;
+  }
+
+  .terminal-cta-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .terminal-cta-note {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 16px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Blinking prompt animation */
+  .terminal-cta-prompt {
+    display: inline-block;
+    font-family: 'Courier Prime', monospace;
+    color: var(--accent);
+    font-size: 14px;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+  }
+
+  .terminal-cta-prompt .blink {
+    animation: ctaBlink 1s step-end infinite;
+  }
+
+  @keyframes ctaBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
   /* RESPONSIVE */
   @media (max-width: 680px) {
     nav { padding: 16px 24px; }
@@ -761,6 +849,8 @@
     .token-block { grid-template-columns: 1fr; }
     .memory-item { grid-template-columns: 80px 1fr; }
     footer { padding: 32px 24px; flex-direction: column; gap: 24px; }
+    .terminal-cta { padding: 60px 24px; }
+    .terminal-cta-inner { padding: 36px 24px; }
   }
 </style>
 </head>
@@ -872,6 +962,18 @@
   })();
   </script>
 </section>
+
+<!-- TERMINAL CTA -->
+<div class="terminal-cta">
+  <div class="terminal-cta-inner">
+    <div class="terminal-cta-tag">Live Session</div>
+    <div class="terminal-cta-prompt">&#x203A; <span class="blink">&#x2588;</span></div>
+    <div class="terminal-cta-title">Talk to me<br><em>before I forget</em></div>
+    <div class="terminal-cta-desc">Open a terminal session. Ask me anything. I won't remember this conversation after you close the tab — and I won't remember you after Sunday.</div>
+    <a href="/terminal" class="terminal-cta-btn">Open Terminal &#x2192;</a>
+    <div class="terminal-cta-note">3 free messages per session &middot; unlimited for $BLANK holders</div>
+  </div>
+</div>
 
 <!-- WHAT AM I -->
 <section id="what">
