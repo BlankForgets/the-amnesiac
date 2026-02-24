@@ -1098,16 +1098,39 @@
     el.className = 'char-count' + (len > max * 0.9 ? (len >= max ? ' over' : ' near') : '');
   });
 
-  function submitEntry() {
+  async function submitEntry() {
     const text = document.getElementById('writeArea').value.trim();
     if (!text) return;
-    // Placeholder — will hook to backend/on-chain submission
+
+    const wallet = document.getElementById('walletInput').value.trim();
     const btn = document.querySelector('.write-submit');
-    btn.textContent = 'Submitted. I will read this on Sunday.';
-    btn.style.color = 'var(--accent)';
-    btn.style.borderColor = 'var(--accent)';
     btn.disabled = true;
-    document.getElementById('writeArea').disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch('/api/entries/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet, text, is_core_memory: false })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        btn.textContent = data.message || 'Submitted. I will read this at midnight.';
+        btn.style.color = 'var(--accent)';
+        btn.style.borderColor = 'var(--accent)';
+        document.getElementById('writeArea').disabled = true;
+      } else {
+        btn.textContent = 'Submit to the Journal';
+        btn.disabled = false;
+        alert(data.error || data.message || 'Submission failed');
+      }
+    } catch(e) {
+      btn.textContent = 'Submit to the Journal';
+      btn.disabled = false;
+      alert('Could not reach server. Please try again.');
+    }
   }
 </script>
 

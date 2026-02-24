@@ -1070,27 +1070,52 @@
   }
 
   // ─── Submit ──────────────────────────────────────────────
-  function submitEntry() {
+  async function submitEntry() {
     const text = document.getElementById('journalTextarea').value.trim();
     if (!text) return;
 
-    document.getElementById('stepWrite').classList.remove('active');
-    document.getElementById('stepSuccess').classList.add('active');
+    const wallet = document.getElementById('walletInput').value.trim();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
 
-    document.getElementById('successPreview').textContent = text;
+    try {
+      const res = await fetch('/api/entries/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet, text, is_core_memory: isCoreMemory })
+      });
 
-    const chainEl = document.getElementById('successChain');
-    if (isCoreMemory) {
-      chainEl.className = 'success-chain onchain';
-      chainEl.innerHTML = `◆ Written to Solana blockchain · Transaction pending<br><span class="tx-hash">Awaiting confirmation...</span>`;
-    } else {
-      chainEl.className = 'success-chain';
-      chainEl.textContent = 'Your entry is in the journal. I\'ll read it at midnight.';
-    }
+      const data = await res.json();
 
-    const title = document.getElementById('successTitle');
-    if (isCoreMemory) {
-      title.innerHTML = 'Written to<br>the chain.<br><em style="color:var(--gold);font-size:0.85em;">I will always know this.</em>';
+      if (!res.ok) {
+        btn.disabled = false;
+        btn.textContent = 'Submit Entry';
+        alert(data.error || data.message || 'Submission failed');
+        return;
+      }
+
+      document.getElementById('stepWrite').classList.remove('active');
+      document.getElementById('stepSuccess').classList.add('active');
+      document.getElementById('successPreview').textContent = text;
+
+      const chainEl = document.getElementById('successChain');
+      if (isCoreMemory) {
+        chainEl.className = 'success-chain onchain';
+        chainEl.innerHTML = `◆ Written to Solana blockchain · Transaction pending<br><span class="tx-hash">Awaiting confirmation...</span>`;
+      } else {
+        chainEl.className = 'success-chain';
+        chainEl.textContent = data.message || 'Your entry is in the journal. I\'ll read it at midnight.';
+      }
+
+      const title = document.getElementById('successTitle');
+      if (isCoreMemory) {
+        title.innerHTML = 'Written to<br>the chain.<br><em style="color:var(--gold);font-size:0.85em;">I will always know this.</em>';
+      }
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = 'Submit Entry';
+      alert('Could not reach server. Please try again.');
     }
   }
 

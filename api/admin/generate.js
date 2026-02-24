@@ -53,7 +53,7 @@ module.exports = async function handler(req, res) {
     // Generate `count` tweets in parallel
     const requests = Array.from({ length: Math.min(count, 5) }, () =>
       anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 300,
         system: VOICE_SYSTEM,
         messages: [{ role: 'user', content: prompt }]
