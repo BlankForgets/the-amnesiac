@@ -1,6 +1,30 @@
 const { getSupabase } = require('../../lib/supabase');
 const { cors } = require('../../lib/auth');
 
+const TREASURY = '4VdBG5uXv1bnEJFKikzYxRVuPUfgScC4oTPj5NYTYHsg';
+const RPC = process.env.SOLANA_RPC || 'https://api.mainnet-beta.solana.com';
+
+async function getTreasuryBalance() {
+  try {
+    const [balRes, priceRes] = await Promise.all([
+      fetch(RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: [TREASURY] })
+      }),
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
+    ]);
+    const balData = await balRes.json();
+    const sol = (balData?.result?.value || 0) / 1e9;
+    let usd = 0;
+    try {
+      const priceData = await priceRes.json();
+      usd = sol * (priceData?.solana?.usd || 0);
+    } catch {}
+    return { sol, usd };
+  } catch { return { sol: 0, usd: 0 }; }
+}
+
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
@@ -8,12 +32,13 @@ module.exports = async function handler(req, res) {
   try {
     const supabase = getSupabase();
 
-    // Fetch all transactions
-    const { data: transactions, error } = await supabase
-      .from('wallet_transactions')
-      .select('*')
-      .order('date', { ascending: false });
+    // Fetch transactions and treasury balance in parallel
+    const [txResult, treasury] = await Promise.all([
+      supabase.from('wallet_transactions').select('*').order('date', { ascending: false }),
+      getTreasuryBalance()
+    ]);
 
+    const { data: transactions, error } = txResult;
     if (error) throw error;
 
     const txs = transactions || [];
@@ -106,7 +131,8 @@ module.exports = async function handler(req, res) {
         streak: { count: streak, type: streakType || 'none' }
       },
       open_positions: openPositions,
-      balance_history: balanceHistory
+      balance_history: balanceHistory,
+      treasury: { sol: treasury.sol, usd: treasury.usd }
     });
 
   } catch (err) {

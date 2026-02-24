@@ -1226,39 +1226,16 @@
     } catch(e) {}
   })();
 
-  // Treasury wallet balance
-  const TREASURY = '4VdBG5uXv1bnEJFKikzYxRVuPUfgScC4oTPj5NYTYHsg';
-  const RPC = 'https://api.mainnet-beta.solana.com';
-
-  async function fetchTreasuryBalance() {
-    try {
-      const res = await fetch(RPC, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 1,
-          method: 'getBalance',
-          params: [TREASURY]
-        })
-      });
-      const data = await res.json();
-      const lamports = data?.result?.value || 0;
-      const sol = (lamports / 1e9).toFixed(4);
-      document.getElementById('treasuryBalance').textContent = sol;
-    } catch(e) {
-      document.getElementById('treasuryBalance').textContent = '--';
-    }
-  }
-
-  fetchTreasuryBalance();
-  setInterval(fetchTreasuryBalance, 60000);
-
-  // Mini-dashboard: wallet stats
+  // Mini-dashboard: wallet stats + treasury balance
   async function fetchMiniDash() {
     try {
       const res = await fetch('/api/wallet/stats');
       const data = await res.json();
       const s = data.stats || {};
+
+      // Treasury balance (from backend)
+      const tb = data.treasury || {};
+      document.getElementById('treasuryBalance').textContent = (tb.sol || 0).toFixed(4);
 
       // Stats
       const pnl = s.total_pnl_sol || 0;

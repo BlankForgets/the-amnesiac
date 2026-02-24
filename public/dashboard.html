@@ -782,8 +782,6 @@
 </div>
 
 <script>
-  const TREASURY = '4VdBG5uXv1bnEJFKikzYxRVuPUfgScC4oTPj5NYTYHsg';
-  const RPC = 'https://api.mainnet-beta.solana.com';
   let allTransactions = [];
   let currentFilter = 'all';
   let currentSort = { key: 'date', asc: false };
@@ -791,37 +789,8 @@
 
   // -- INIT --------------------------------------------------------
   async function init() {
-    await Promise.all([fetchBalance(), fetchStats()]);
-    setInterval(fetchBalance, 60000);
+    await fetchStats();
     setInterval(fetchStats, 60000);
-  }
-
-  // -- BALANCE -----------------------------------------------------
-  async function fetchBalance() {
-    try {
-      const [balRes, priceRes] = await Promise.all([
-        fetch(RPC, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: [TREASURY] })
-        }),
-        fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
-      ]);
-
-      const balData = await balRes.json();
-      const sol = ((balData?.result?.value || 0) / 1e9);
-      document.getElementById('balanceSol').textContent = sol.toFixed(4);
-
-      try {
-        const priceData = await priceRes.json();
-        const usd = sol * (priceData?.solana?.usd || 0);
-        document.getElementById('balanceUsd').textContent = usd > 0 ? `$${usd.toFixed(2)} USD` : '';
-      } catch {
-        document.getElementById('balanceUsd').textContent = '';
-      }
-    } catch {
-      document.getElementById('balanceSol').textContent = '--';
-    }
   }
 
   // -- STATS -------------------------------------------------------
@@ -832,6 +801,11 @@
 
       allTransactions = data.transactions || [];
       const s = data.stats || {};
+
+      // Treasury balance (from backend)
+      const t = data.treasury || {};
+      document.getElementById('balanceSol').textContent = (t.sol || 0).toFixed(4);
+      document.getElementById('balanceUsd').textContent = t.usd > 0 ? `$${t.usd.toFixed(2)} USD` : '';
 
       // Metrics
       const pnlEl = document.getElementById('metricPnl');
