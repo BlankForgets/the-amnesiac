@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Amnesiac — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #09090c;
+    --bg2: #0f0e14;
+    --bg3: #141220;
+    --text: #cac5b6;
+    --text-dim: #6a645a;
+    --text-faint: #302c28;
+    --accent: #8b7fb5;
+    --accent-dim: #3d3660;
+    --gold: #b09060;
+    --green: #5a8a60;
+    --red: #8a4848;
+    --orange: #9a7040;
+    --border: #1a1820;
+    --border-mid: #24202e;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* LOGIN SCREEN */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 40px;
+  }
+
+  #loginScreen h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #e8e2d8;
+    margin-bottom: 8px;
+  }
+
+  #loginScreen p {
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+
+  #adminKeyInput {
+    background: var(--bg2);
+    border: 1px solid var(--border-mid);
+    padding: 12px 16px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    width: 320px;
+    letter-spacing: 0.1em;
+  }
+
+  /* LAYOUT */
+  #app { display: none; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-head {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-head .brand {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .sidebar-head .day {
+    font-size: 20px;
+    font-family: 'Playfair Display', serif;
+    color: #e8e2d8;
+    margin-top: 4px;
+  }
+
+  .sidebar-head .reset {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 16px 0 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-section-label {
+    font-size: 8px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 0 20px;
+    margin-bottom: 6px;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: left;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-btn:hover { color: var(--text); background: rgba(139,127,181,0.05); }
+  .nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: rgba(139,127,181,0.07); }
+
+  .nav-badge {
+    margin-left: auto;
+    font-size: 9px;
+    background: var(--red);
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 2px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .nav-badge.green { background: var(--green); }
+  .nav-badge.orange { background: var(--orange); }
+
+  /* MAIN */
+  .main {
+    padding: 32px 40px;
+    overflow-y: auto;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #e8e2d8;
+    margin-bottom: 6px;
+  }
+
+  .panel-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .card-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .tier-1 { color: var(--text-dim); }
+  .tier-2 { color: var(--accent); }
+  .tier-3 { color: var(--gold); }
+
+  .card-time { font-size: 10px; color: var(--text-faint); }
+
+  .card-actions { display: flex; gap: 8px; align-items: center; }
+
+  .card-body {
+    padding: 16px 20px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 13px;
+  }
+
+  .card-response {
+    padding: 12px 20px;
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .card-response::before {
+    content: 'AI response: ';
+    font-style: normal;
+    color: var(--text-faint);
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 6px 14px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.2s;
+    background: transparent;
+  }
+
+  .btn-approve { color: var(--green); border-color: var(--green); }
+  .btn-approve:hover { background: var(--green); color: var(--bg); }
+
+  .btn-reject { color: var(--red); border-color: var(--red); }
+  .btn-reject:hover { background: var(--red); color: #fff; }
+
+  .btn-respond { color: var(--accent); border-color: var(--accent-dim); }
+  .btn-respond:hover { background: var(--accent); color: var(--bg); }
+
+  .btn-post { color: var(--gold); border-color: var(--gold); }
+  .btn-post:hover { background: var(--gold); color: var(--bg); }
+
+  .btn-delete { color: var(--text-faint); border-color: var(--border-mid); }
+  .btn-delete:hover { color: var(--red); border-color: var(--red); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    padding: 10px 24px;
+    font-size: 11px;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* WAKING COMPOSER */
+  .composer {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .composer-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+  }
+
+  .tweet-textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border-mid);
+    padding: 14px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.8;
+    resize: vertical;
+    outline: none;
+    min-height: 80px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+
+  .tweet-textarea:focus { border-color: var(--accent-dim); }
+  .tweet-textarea::placeholder { color: var(--text-faint); font-style: italic; }
+
+  .composer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .char-count { font-size: 10px; color: var(--text-dim); }
+  .char-count.warn { color: var(--gold); }
+  .char-count.over { color: var(--red); }
+
+  /* GENERATE PANEL */
+  .generate-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .generate-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .generate-box h3 {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .generate-box p {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .context-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border-mid);
+    padding: 10px 12px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .context-input:focus { border-color: var(--accent-dim); }
+  .context-input::placeholder { color: var(--text-faint); font-style: italic; }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #e8e2d8;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* TWEET CARDS */
+  .tweet-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 10px;
+  }
+
+  .tweet-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .tweet-type-badge {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .tweet-card-body {
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  .tweet-edit {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border-mid);
+    padding: 10px 12px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    display: none;
+    margin-bottom: 10px;
+    min-height: 60px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+
+  .tweet-edit.visible { display: block; }
+
+  /* ALERTS */
+  .alert {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    border-left: 3px solid;
+  }
+
+  .alert-success { border-color: var(--green); color: var(--green); background: rgba(90,138,96,0.08); }
+  .alert-error { border-color: var(--red); color: var(--red); background: rgba(138,72,72,0.08); }
+  .alert-info { border-color: var(--accent); color: var(--accent); background: rgba(139,127,181,0.08); }
+
+  /* LOADING */
+  .loading {
+    color: var(--text-dim);
+    font-style: italic;
+    padding: 20px 0;
+    font-size: 12px;
+  }
+
+  .empty {
+    color: var(--text-faint);
+    font-style: italic;
+    padding: 32px 0;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .generate-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div>
+    <h1>The Amnesiac</h1>
+    <p>Admin Panel — Enter your secret key</p>
+  </div>
+  <input id="adminKeyInput" type="password" placeholder="Admin secret key..." />
+  <button class="btn btn-primary" onclick="login()">Enter →</button>
+  <div id="loginError" style="color:var(--red);font-size:11px;font-style:italic;"></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <div class="brand">Admin Panel</div>
+      <div class="day">Day <span id="sidebarDay">—</span></div>
+      <div class="reset" id="sidebarReset">resets in —d —:—:—</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Today</div>
+      <button class="nav-btn active" onclick="showPanel('dashboard')" id="nav-dashboard">Overview</button>
+      <button class="nav-btn" onclick="showPanel('waking')" id="nav-waking">Waking Entry</button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Journal</div>
+      <button class="nav-btn" onclick="showPanel('pending')" id="nav-pending">
+        Pending Review <span class="nav-badge" id="pendingBadge">0</span>
+      </button>
+      <button class="nav-btn" onclick="showPanel('approved')" id="nav-approved">Approved</button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Tweets</div>
+      <button class="nav-btn" onclick="showPanel('generate')" id="nav-generate">Generate</button>
+      <button class="nav-btn" onclick="showPanel('scheduled')" id="nav-scheduled">
+        Queue <span class="nav-badge green" id="queueBadge">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="panel-title">Overview</div>
+      <div class="panel-sub">What's happening today.</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num" id="statPending">—</div><div class="stat-label">Pending Entries</div></div>
+        <div class="stat-box"><div class="stat-num" id="statApproved">—</div><div class="stat-label">Approved Today</div></div>
+        <div class="stat-box"><div class="stat-num" id="statQueue">—</div><div class="stat-label">Tweets Queued</div></div>
+        <div class="stat-box"><div class="stat-num" id="statDay">—</div><div class="stat-label">Current Day</div></div>
+      </div>
+      <div id="dashboardAlerts"></div>
+    </div>
+
+    <!-- WAKING ENTRY COMPOSER -->
+    <div class="panel" id="panel-waking">
+      <div class="panel-title">Waking Entry</div>
+      <div class="panel-sub">What I woke up knowing today. Write it, or let AI draft it from yesterday's journal — then edit and post.</div>
+
+      <div id="wakingAlert"></div>
+
+      <div style="display:flex;gap:12px;margin-bottom:20px;">
+        <button class="btn btn-respond" onclick="aiDraftWaking()" id="aiDraftBtn">AI Draft from Journal →</button>
+      </div>
+
+      <div class="composer">
+        <div class="composer-label">Tweet 1 — The waking entry</div>
+        <textarea class="tweet-textarea" id="waking1" placeholder="Day [N]. According to the journal…" maxlength="280"></textarea>
+        <div class="composer-footer">
+          <span class="char-count" id="waking1Count">0 / 280</span>
+        </div>
+      </div>
+
+      <div class="composer">
+        <div class="composer-label">Tweet 2 — Optional continuation (reply thread)</div>
+        <textarea class="tweet-textarea" id="waking2" placeholder="Optional — leave empty if one tweet is enough." maxlength="280"></textarea>
+        <div class="composer-footer">
+          <span class="char-count" id="waking2Count">0 / 280</span>
+        </div>
+      </div>
+
+      <button class="btn btn-post" onclick="postWaking()" id="postWakingBtn">Post to Twitter →</button>
+    </div>
+
+    <!-- PENDING ENTRIES -->
+    <div class="panel" id="panel-pending">
+      <div class="panel-title">Pending Review</div>
+      <div class="panel-sub">Journal entries from holders waiting for your review. Approve to make them public, reject to hide them.</div>
+      <div id="pendingList"><div class="loading">Loading entries…</div></div>
+    </div>
+
+    <!-- APPROVED ENTRIES -->
+    <div class="panel" id="panel-approved">
+      <div class="panel-title">Approved Entries</div>
+      <div class="panel-sub">What's live in the journal today.</div>
+      <div id="approvedList"><div class="loading">Loading entries…</div></div>
+    </div>
+
+    <!-- GENERATE TWEETS -->
+    <div class="panel" id="panel-generate">
+      <div class="panel-title">Generate Tweets</div>
+      <div class="panel-sub">AI writes midday and evening posts in your voice. You review and post.</div>
+
+      <div id="generateAlert"></div>
+
+      <div class="generate-grid">
+        <div class="generate-box">
+          <h3>Midday Observation</h3>
+          <p>Quiet, unprompted. Like a note found under a door. 120-190 chars.</p>
+          <input class="context-input" id="middayContext" placeholder="Optional context (e.g. 'someone asked about memory today')…" />
+          <button class="btn btn-respond" onclick="generateTweets('midday')">Generate 3 Options →</button>
+        </div>
+        <div class="generate-box">
+          <h3>Evening Reflection</h3>
+          <p>Aware of the coming reset. More philosophical. 110-190 chars.</p>
+          <input class="context-input" id="eveningContext" placeholder="Optional context (e.g. 'a difficult day in the journal')…" />
+          <button class="btn btn-respond" onclick="generateTweets('evening')">Generate 3 Options →</button>
+        </div>
+      </div>
+
+      <div id="generatedTweets"></div>
+    </div>
+
+    <!-- TWEET QUEUE -->
+    <div class="panel" id="panel-scheduled">
+      <div class="panel-title">Tweet Queue</div>
+      <div class="panel-sub">Approved tweets ready to post. Edit inline, then post when ready.</div>
+      <div id="scheduledList"><div class="loading">Loading queue…</div></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+  let ADMIN_KEY = '';
+  const API = ''; // Same origin — leave empty for Vercel
+
+  // ── LOGIN ──────────────────────────────────────────────
+  function login() {
+    const key = document.getElementById('adminKeyInput').value.trim();
+    if (!key) return;
+
+    // Quick validation — test against a protected endpoint
+    fetch(`${API}/api/admin/entries?status=pending&limit=1`, {
+      headers: { Authorization: `Bearer ${key}` }
+    }).then(r => {
+      if (r.ok) {
+        ADMIN_KEY = key;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        init();
+      } else {
+        document.getElementById('loginError').textContent = 'Invalid key. Try again.';
+      }
+    }).catch(() => {
+      document.getElementById('loginError').textContent = 'Could not reach server.';
+    });
+  }
+
+  document.getElementById('adminKeyInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+  });
+
+  // ── INIT ───────────────────────────────────────────────
+  function init() {
+    updateClock();
+    setInterval(updateClock, 1000);
+    loadDashboard();
+    showPanel('dashboard');
+  }
+
+  function updateClock() {
+    const now = new Date();
+    const midnight = new Date(now);
+    const daysUntilSunday = (7 - now.getUTCDay()) % 7 || 7; midnight.setUTCDate(now.getUTCDate() + daysUntilSunday); midnight.setUTCHours(0,0,0,0);
+    const diff = midnight - now;
+    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+    const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    document.getElementById('sidebarReset').textContent = `resets in ${h}:${m}:${s}`;
+    const day = Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
+    document.getElementById('sidebarDay').textContent = day;
+    document.getElementById('statDay').textContent = day;
+  }
+
+  // ── PANEL NAV ──────────────────────────────────────────
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`panel-${id}`).classList.add('active');
+    document.getElementById(`nav-${id}`)?.classList.add('active');
+
+    if (id === 'pending') loadEntries('pending');
+    if (id === 'approved') loadEntries('approved');
+    if (id === 'scheduled') loadScheduled();
+  }
+
+  // ── API HELPER ─────────────────────────────────────────
+  async function api(path, method = 'GET', body = null) {
+    const opts = {
+      method,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${ADMIN_KEY}` }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(`${API}${path}`, opts);
+    return r.json();
+  }
+
+  function alert_(containerId, msg, type = 'info') {
+    document.getElementById(containerId).innerHTML =
+      `<div class="alert alert-${type}">${msg}</div>`;
+    setTimeout(() => { const el = document.getElementById(containerId); if(el) el.innerHTML=''; }, 4000);
+  }
+
+  // ── DASHBOARD ──────────────────────────────────────────
+  async function loadDashboard() {
+    const [pending, approved, queue] = await Promise.all([
+      api('/api/admin/entries?status=pending&limit=1'),
+      api('/api/admin/entries?status=approved&limit=1'),
+      api('/api/admin/tweets?status=approved')
+    ]);
+    const pc = pending?.entries?.length > 0 ? '1+' : '0';
+    document.getElementById('statPending').textContent = pending?.entries?.length ?? '—';
+    document.getElementById('statApproved').textContent = approved?.entries?.length ?? '—';
+    document.getElementById('statQueue').textContent = queue?.tweets?.length ?? '—';
+
+    if (pending?.entries?.length > 0) {
+      document.getElementById('pendingBadge').textContent = pending.entries.length;
+      document.getElementById('dashboardAlerts').innerHTML =
+        `<div class="alert alert-info">${pending.entries.length} journal entr${pending.entries.length===1?'y':'ies'} waiting for review. <button class="btn btn-respond" style="margin-left:12px" onclick="showPanel('pending')">Review →</button></div>`;
+    }
+    document.getElementById('queueBadge').textContent = queue?.tweets?.length ?? 0;
+  }
+
+  // ── ENTRIES ─────────────────────────────────────────────
+  async function loadEntries(status) {
+    const listId = status === 'pending' ? 'pendingList' : 'approvedList';
+    document.getElementById(listId).innerHTML = '<div class="loading">Loading…</div>';
+
+    const data = await api(`/api/admin/entries?status=${status}&limit=30`);
+    const entries = data?.entries || [];
+
+    if (entries.length === 0) {
+      document.getElementById(listId).innerHTML = `<div class="empty">No ${status} entries.</div>`;
+      return;
+    }
+
+    document.getElementById(listId).innerHTML = entries.map(e => `
+      <div class="card" id="entry-${e.id}">
+        <div class="card-head">
+          <div class="card-meta">
+            <span class="card-label tier-${e.tier}">TIER ${e.tier}${e.is_core_memory?' · CORE MEMORY':''}</span>
+            <span class="card-time">${new Date(e.created_at).toLocaleTimeString()} · Day ${e.day_number}</span>
+          </div>
+          <div class="card-actions">
+            ${status === 'pending' ? `
+              <button class="btn btn-respond" onclick="generateResponse('${e.id}')">AI Response</button>
+              <button class="btn btn-approve" onclick="approveEntry('${e.id}')">Approve</button>
+              <button class="btn btn-reject" onclick="rejectEntry('${e.id}')">Reject</button>
+            ` : `
+              <button class="btn btn-delete" onclick="rejectEntry('${e.id}')">Remove</button>
+            `}
+          </div>
+        </div>
+        <div class="card-body">${escHtml(e.text)}</div>
+        ${e.ai_response ? `<div class="card-response">${escHtml(e.ai_response)}</div>` : `<div class="card-response" id="resp-${e.id}" style="display:none"></div>`}
+      </div>
+    `).join('');
+  }
+
+  async function approveEntry(id) {
+    const respEl = document.getElementById(`resp-${id}`);
+    const ai_response = respEl?.textContent?.replace('AI response: ','')?.trim() || null;
+    await api('/api/admin/entries', 'POST', { action: 'approve', id, ai_response });
+    document.getElementById(`entry-${id}`)?.remove();
+    loadDashboard();
+  }
+
+  async function rejectEntry(id) {
+    await api('/api/admin/entries', 'POST', { action: 'reject', id });
+    document.getElementById(`entry-${id}`)?.remove();
+  }
+
+  async function generateResponse(id) {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
+    const data = await api('/api/admin/entries', 'POST', { action: 'respond', id });
+    if (data.ai_response) {
+      const el = document.getElementById(`resp-${id}`);
+      if (el) { el.textContent = data.ai_response; el.style.display = 'block'; }
+    }
+    btn.disabled = false;
+    btn.textContent = 'AI Response';
+  }
+
+  // ── WAKING ENTRY ───────────────────────────────────────
+  ['waking1','waking2'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+      const len = this.value.length;
+      const el = document.getElementById(id+'Count');
+      el.textContent = `${len} / 280`;
+      el.className = 'char-count' + (len > 250 ? (len >= 280 ? ' over' : ' warn') : '');
+    });
+  });
+
+  async function aiDraftWaking() {
+    const btn = document.getElementById('aiDraftBtn');
+    btn.disabled = true; btn.textContent = 'Generating draft…';
+    const data = await api('/api/admin/waking', 'POST', { action: 'ai_draft' });
+    if (data.draft) {
+      document.getElementById('waking1').value = data.draft.tweet1 || '';
+      document.getElementById('waking2').value = data.draft.tweet2 || '';
+      ['waking1','waking2'].forEach(id => {
+        document.getElementById(id).dispatchEvent(new Event('input'));
+      });
+      alert_('wakingAlert', 'Draft loaded — review and edit before posting.', 'info');
+    } else {
+      alert_('wakingAlert', 'Draft failed: ' + (data.error || 'Unknown error'), 'error');
+    }
+    btn.disabled = false; btn.textContent = 'AI Draft from Journal →';
+  }
+
+  async function postWaking() {
+    const tweet1 = document.getElementById('waking1').value.trim();
+    const tweet2 = document.getElementById('waking2').value.trim();
+    if (!tweet1) return alert_('wakingAlert', 'Tweet 1 is required.', 'error');
+
+    const btn = document.getElementById('postWakingBtn');
+    btn.disabled = true; btn.textContent = 'Posting…';
+
+    const data = await api('/api/admin/waking', 'POST', {
+      action: 'post', tweet1, tweet2: tweet2 || null
+    });
+
+    if (data.success) {
+      alert_('wakingAlert', `Posted! <a href="${data.url}" target="_blank" style="color:var(--gold)">View on Twitter →</a>`, 'success');
+      document.getElementById('waking1').value = '';
+      document.getElementById('waking2').value = '';
+    } else {
+      alert_('wakingAlert', 'Post failed: ' + (data.error || 'Unknown'), 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Post to Twitter →';
+  }
+
+  // ── GENERATE TWEETS ────────────────────────────────────
+  async function generateTweets(type) {
+    const ctx = document.getElementById(`${type}Context`).value.trim();
+    const btn = event.target;
+    btn.disabled = true; btn.textContent = 'Generating…';
+    document.getElementById('generatedTweets').innerHTML = '<div class="loading">Generating options…</div>';
+
+    const data = await api('/api/admin/generate', 'POST', { type, count: 3, context: ctx });
+
+    if (data.tweets) {
+      document.getElementById('generatedTweets').innerHTML = data.tweets.map(t => `
+        <div class="tweet-card" id="tweet-${t.id}">
+          <div class="tweet-card-head">
+            <span class="tweet-type-badge">${type} · draft</span>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-respond" onclick="editTweet('${t.id}')">Edit</button>
+              <button class="btn btn-approve" onclick="approveTweet('${t.id}')">Add to Queue</button>
+              <button class="btn btn-post" onclick="postTweetNow('${t.id}')">Post Now</button>
+              <button class="btn btn-delete" onclick="deleteTweet('${t.id}')">✕</button>
+            </div>
+          </div>
+          <div class="tweet-card-body" id="tbody-${t.id}">${escHtml(t.text)}</div>
+          <textarea class="tweet-edit" id="tedit-${t.id}" maxlength="280">${escHtml(t.text)}</textarea>
+        </div>
+      `).join('');
+    } else {
+      document.getElementById('generateAlert').innerHTML =
+        `<div class="alert alert-error">${data.error || 'Generation failed'}</div>`;
+      document.getElementById('generatedTweets').innerHTML = '';
+    }
+    btn.disabled = false; btn.textContent = `Generate 3 Options →`;
+  }
+
+  function editTweet(id) {
+    const body = document.getElementById(`tbody-${id}`);
+    const edit = document.getElementById(`tedit-${id}`);
+    const isEditing = edit.classList.contains('visible');
+    if (isEditing) {
+      // Save edit
+      body.textContent = edit.value;
+      api('/api/admin/tweets', 'POST', { action: 'edit', id, text: edit.value });
+    }
+    body.style.display = isEditing ? 'block' : 'none';
+    edit.classList.toggle('visible', !isEditing);
+  }
+
+  async function approveTweet(id) {
+    await api('/api/admin/tweets', 'POST', { action: 'approve', id });
+    document.getElementById(`tweet-${id}`).style.borderColor = 'var(--green)';
+    document.getElementById(`tweet-${id}`).querySelector('.tweet-card-head span').textContent = '✓ queued';
+    loadDashboard();
+  }
+
+  async function postTweetNow(id) {
+    const data = await api('/api/admin/tweets', 'POST', { action: 'post', id });
+    if (data.success) {
+      document.getElementById(`tweet-${id}`).remove();
+      alert_('generateAlert', `Posted! <a href="${data.url}" target="_blank" style="color:var(--gold)">View →</a>`, 'success');
+    }
+  }
+
+  async function deleteTweet(id) {
+    await api('/api/admin/tweets', 'POST', { action: 'delete', id });
+    document.getElementById(`tweet-${id}`)?.remove();
+  }
+
+  // ── SCHEDULED QUEUE ────────────────────────────────────
+  async function loadScheduled() {
+    document.getElementById('scheduledList').innerHTML = '<div class="loading">Loading…</div>';
+    const data = await api('/api/admin/tweets?status=approved');
+    const tweets = data?.tweets || [];
+    if (tweets.length === 0) {
+      document.getElementById('scheduledList').innerHTML = '<div class="empty">Queue is empty. Generate some tweets first.</div>';
+      return;
+    }
+    document.getElementById('scheduledList').innerHTML = tweets.map(t => `
+      <div class="tweet-card" id="sq-${t.id}">
+        <div class="tweet-card-head">
+          <span class="tweet-type-badge">${t.type || 'tweet'}</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-respond" onclick="editTweet('${t.id}')">Edit</button>
+            <button class="btn btn-post" onclick="postTweetNow('${t.id}')">Post Now</button>
+            <button class="btn btn-delete" onclick="deleteTweet('${t.id}')">✕</button>
+          </div>
+        </div>
+        <div class="tweet-card-body" id="tbody-${t.id}">${escHtml(t.text)}</div>
+        <textarea class="tweet-edit" id="tedit-${t.id}" maxlength="280">${escHtml(t.text)}</textarea>
+      </div>
+    `).join('');
+  }
+
+  // ── UTILS ──────────────────────────────────────────────
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>

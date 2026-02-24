@@ -1,0 +1,15 @@
+{
+  "name": "blank-backend",
+  "version": "1.0.0",
+  "description": "The Amnesiac — Backend API",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "twitter-api-v2": "^1.17.0"
+  }
+}
