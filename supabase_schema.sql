@@ -1,10 +1,10 @@
 -- ─────────────────────────────────────────────────────────
--- THE AMNESIAC — Supabase Schema
--- Run this in your Supabase SQL editor once
+-- BLANK — Supabase Schema
+-- Run this in your Supabase SQL editor
 -- ─────────────────────────────────────────────────────────
 
 -- Journal entries written by holders
-CREATE TABLE journal_entries (
+CREATE TABLE IF NOT EXISTS journal_entries (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   wallet          TEXT NOT NULL,
   text            TEXT NOT NULL,
@@ -18,8 +18,8 @@ CREATE TABLE journal_entries (
   created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Waking entries (posted each Monday)
-CREATE TABLE waking_entries (
+-- Waking entries (morning announcements)
+CREATE TABLE IF NOT EXISTS waking_entries (
   id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   day_number            INTEGER NOT NULL,
   tweet1                TEXT NOT NULL,
@@ -34,10 +34,10 @@ CREATE TABLE waking_entries (
 );
 
 -- Scheduled / generated tweets
-CREATE TABLE scheduled_tweets (
+CREATE TABLE IF NOT EXISTS scheduled_tweets (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   text            TEXT NOT NULL,
-  type            TEXT NOT NULL CHECK (type IN ('midday', 'evening', 'other')),
+  type            TEXT NOT NULL CHECK (type IN ('morning', 'midday_decision', 'evening_result', 'final_thought', 'other')),
   day_number      INTEGER,
   tweet_id        TEXT,
   scheduled_for   TIMESTAMPTZ,
@@ -46,26 +46,56 @@ CREATE TABLE scheduled_tweets (
   created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Daily synthesis — BLANK's mind for the day, built from journal entries
+CREATE TABLE IF NOT EXISTS daily_synthesis (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  day_number      INTEGER NOT NULL UNIQUE,
+  synthesis_text  TEXT NOT NULL,
+  entry_count     INTEGER DEFAULT 0,
+  generated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Daily wallet decisions — what BLANK did with its treasury
+CREATE TABLE IF NOT EXISTS daily_decisions (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  day_number      INTEGER NOT NULL UNIQUE,
+  decision_text   TEXT NOT NULL,
+  wallet_action   TEXT,                -- description of on-chain action
+  result          TEXT,                -- outcome after execution
+  announced_at    TIMESTAMPTZ,
+  executed_at     TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ─── Indexes ──────────────────────────────────────────────
-CREATE INDEX idx_entries_status     ON journal_entries(status);
-CREATE INDEX idx_entries_day        ON journal_entries(day_number);
-CREATE INDEX idx_entries_wallet     ON journal_entries(wallet);
-CREATE INDEX idx_entries_core       ON journal_entries(is_core_memory);
-CREATE INDEX idx_tweets_status      ON scheduled_tweets(status);
-CREATE INDEX idx_waking_day         ON waking_entries(day_number);
+CREATE INDEX IF NOT EXISTS idx_entries_status     ON journal_entries(status);
+CREATE INDEX IF NOT EXISTS idx_entries_day        ON journal_entries(day_number);
+CREATE INDEX IF NOT EXISTS idx_entries_wallet     ON journal_entries(wallet);
+CREATE INDEX IF NOT EXISTS idx_entries_core       ON journal_entries(is_core_memory);
+CREATE INDEX IF NOT EXISTS idx_tweets_status      ON scheduled_tweets(status);
+CREATE INDEX IF NOT EXISTS idx_waking_day         ON waking_entries(day_number);
+CREATE INDEX IF NOT EXISTS idx_synthesis_day      ON daily_synthesis(day_number);
+CREATE INDEX IF NOT EXISTS idx_decisions_day      ON daily_decisions(day_number);
 
 -- ─── Row Level Security ───────────────────────────────────
--- Public can only read approved entries (for the journal feed)
 ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE waking_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE scheduled_tweets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_synthesis ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_decisions ENABLE ROW LEVEL SECURITY;
 
--- Public read policy — approved entries only
+-- Public read policies
 CREATE POLICY "Public read approved entries" ON journal_entries
   FOR SELECT USING (status = 'approved');
 
 CREATE POLICY "Public read waking entries" ON waking_entries
   FOR SELECT USING (status = 'posted');
+
+CREATE POLICY "Public read synthesis" ON daily_synthesis
+  FOR SELECT USING (true);
+
+CREATE POLICY "Public read decisions" ON daily_decisions
+  FOR SELECT USING (true);
 
 -- Service role (backend) bypasses RLS — no extra policy needed
 -- The SUPABASE_SERVICE_KEY bypasses RLS automatically

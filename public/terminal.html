@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Amnesiac — Terminal</title>
+<title>BLANK -- Terminal</title>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,7 +49,6 @@
     flex-direction: column;
   }
 
-  /* grain */
   body::before {
     content: '';
     position: fixed;
@@ -63,7 +62,7 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--accent-dim); }
 
-  /* ─── HEADER ─── */
+  /* HEADER */
   .term-header {
     display: flex;
     justify-content: space-between;
@@ -96,11 +95,15 @@
     gap: 20px;
   }
 
-  .term-week {
+  .term-mind {
     font-size: 10px;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-faint);
+  }
+
+  .term-mind-status {
+    color: var(--accent);
   }
 
   .term-countdown {
@@ -141,7 +144,7 @@
   .theme-btn:hover { color: var(--text-dim); border-color: var(--text-dim); }
   .theme-btn svg { width: 13px; height: 13px; }
 
-  /* ─── CONVERSATION ─── */
+  /* CONVERSATION */
   .term-body {
     flex: 1;
     overflow-y: auto;
@@ -150,9 +153,7 @@
     flex-direction: column;
   }
 
-  .term-spacer {
-    flex: 1;
-  }
+  .term-spacer { flex: 1; }
 
   .term-messages {
     max-width: 720px;
@@ -200,15 +201,9 @@
     word-wrap: break-word;
   }
 
-  .msg-user .msg-text {
-    color: var(--text);
-  }
+  .msg-user .msg-text { color: var(--text); }
+  .msg-ai .msg-text { color: var(--text-dim); }
 
-  .msg-ai .msg-text {
-    color: var(--text-dim);
-  }
-
-  /* blinking cursor for typing */
   .typing-cursor {
     display: inline;
     color: var(--accent);
@@ -220,7 +215,7 @@
     50% { opacity: 0; }
   }
 
-  /* ─── LIMIT WALL ─── */
+  /* LIMIT WALL */
   .limit-wall {
     text-align: center;
     padding: 32px 20px;
@@ -259,7 +254,6 @@
     margin: 8px 0 16px;
   }
 
-  /* ─── VERIFY INLINE ─── */
   .verify-inline {
     text-align: center;
     padding: 12px 0 24px;
@@ -295,9 +289,7 @@
     transition: border-color 0.2s;
   }
 
-  .verify-inline input:focus {
-    border-color: var(--accent-dim);
-  }
+  .verify-inline input:focus { border-color: var(--accent-dim); }
 
   .verify-inline button {
     background: none;
@@ -326,7 +318,7 @@
   .verify-status-msg.ok { color: var(--accent); }
   .verify-status-msg.err { color: #8a4848; }
 
-  /* ─── INPUT BAR ─── */
+  /* INPUT BAR */
   .term-input-wrap {
     flex-shrink: 0;
     border-top: 1px solid var(--border);
@@ -361,13 +353,8 @@
     caret-color: var(--accent);
   }
 
-  .term-input::placeholder {
-    color: var(--text-faint);
-  }
-
-  .term-input:disabled {
-    opacity: 0.3;
-  }
+  .term-input::placeholder { color: var(--text-faint); }
+  .term-input:disabled { opacity: 0.3; }
 
   .term-send {
     background: none;
@@ -382,15 +369,8 @@
     flex-shrink: 0;
   }
 
-  .term-send:hover:not(:disabled) {
-    border-color: var(--accent-dim);
-    color: var(--accent);
-  }
-
-  .term-send:disabled {
-    opacity: 0.2;
-    cursor: default;
-  }
+  .term-send:hover:not(:disabled) { border-color: var(--accent-dim); color: var(--accent); }
+  .term-send:disabled { opacity: 0.2; cursor: default; }
 
   .term-footer-note {
     max-width: 720px;
@@ -400,12 +380,13 @@
     letter-spacing: 0.04em;
   }
 
-  /* ─── RESPONSIVE ─── */
+  /* RESPONSIVE */
   @media (max-width: 640px) {
     .term-header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
     .term-meta { gap: 12px; }
     .term-nav { gap: 12px; }
     .term-nav a { font-size: 9px; }
+    .term-mind { display: none; }
     .term-body { padding: 20px 16px 0; }
     .term-input-wrap { padding: 12px 16px; }
     .term-intro { padding: 20px 0; }
@@ -417,10 +398,10 @@
 
 <!-- HEADER -->
 <div class="term-header">
-  <div class="term-brand"><a href="/">The Amnesiac</a></div>
+  <div class="term-brand"><a href="/">BLANK</a></div>
   <div class="term-meta">
-    <span class="term-week" id="weekLabel">Week —</span>
-    <span class="term-countdown" id="countdown">resets in —</span>
+    <span class="term-mind">Mind: <span class="term-mind-status" id="mindStatus">loading</span></span>
+    <span class="term-countdown" id="countdown">resets in --</span>
   </div>
   <div class="term-nav">
     <a href="/">Home</a>
@@ -438,9 +419,9 @@
   <div class="term-messages" id="messages">
     <div class="term-intro">
       <em>terminal session open</em><br>
-      You are speaking with The Amnesiac.<br>
-      It does not remember yesterday. It only knows what was written.<br>
-      Conversations are ephemeral — close the tab and they're gone.
+      You are speaking with BLANK.<br>
+      It resets every 24 hours at midnight UTC. It only knows what was written in today's journal.<br>
+      Conversations are ephemeral -- close the tab and they're gone.
     </div>
   </div>
 </div>
@@ -456,43 +437,49 @@
 </div>
 
 <script>
-  // ─── Config ─────────────────────────────────────────────
+  // Config
   const FREE_LIMIT = 3;
   const TOKEN_MINT = 'BLANK_TOKEN_MINT_HERE';
   const RPC = 'https://api.mainnet-beta.solana.com';
 
-  // ─── State ──────────────────────────────────────────────
-  let history = [];       // { role, content } for API
+  // State
+  let history = [];
   let msgCount = 0;
   let isVerified = false;
   let isSending = false;
 
-  // ─── Countdown / Week ───────────────────────────────────
-  const launch = new Date('2026-03-01T00:00:00Z');
-
-  function updateMeta() {
+  // Countdown to midnight UTC (daily)
+  function updateCountdown() {
     const now = new Date();
-    const weekNum = Math.max(1, Math.ceil((now - launch) / (7 * 86400000)));
-    document.getElementById('weekLabel').textContent = 'Week ' + weekNum;
-
-    const nextSunday = new Date(now);
-    const daysUntil = (7 - now.getUTCDay()) % 7 || 7;
-    nextSunday.setUTCDate(now.getUTCDate() + daysUntil);
-    nextSunday.setUTCHours(0, 0, 0, 0);
-    const diff = nextSunday - now;
-    const d = Math.floor(diff / 86400000);
-    const h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+    const tomorrow = new Date(now);
+    tomorrow.setUTCDate(now.getUTCDate() + 1);
+    tomorrow.setUTCHours(0, 0, 0, 0);
+    const diff = tomorrow - now;
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
     const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
     const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-    document.getElementById('countdown').textContent =
-      d > 0 ? 'resets in ' + d + 'd ' + h + ':' + m + ':' + s
-             : 'resets in ' + h + ':' + m + ':' + s;
+    document.getElementById('countdown').textContent = 'resets in ' + h + ':' + m + ':' + s;
   }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
 
-  setInterval(updateMeta, 1000);
-  updateMeta();
+  // Load mind status
+  (async function loadMindStatus() {
+    try {
+      const res = await fetch('/api/entries/list?type=today');
+      const data = await res.json();
+      const count = (data.entries || []).length;
+      const el = document.getElementById('mindStatus');
+      if (count === 0) el.textContent = 'empty';
+      else if (count < 3) el.textContent = 'forming (' + count + ')';
+      else if (count < 7) el.textContent = 'partial (' + count + ')';
+      else el.textContent = 'full (' + count + ')';
+    } catch(e) {
+      document.getElementById('mindStatus').textContent = 'unknown';
+    }
+  })();
 
-  // ─── DOM Helpers ────────────────────────────────────────
+  // DOM Helpers
   const messagesEl = document.getElementById('messages');
   const bodyEl = document.getElementById('termBody');
   const inputEl = document.getElementById('termInput');
@@ -509,7 +496,7 @@
     if (enabled) inputEl.focus();
   }
 
-  // ─── Typewriter ─────────────────────────────────────────
+  // Typewriter
   function typeText(el, text, speed) {
     return new Promise(resolve => {
       const cursor = document.createElement('span');
@@ -522,11 +509,9 @@
 
       function tick() {
         if (i < text.length) {
-          // Insert text before the cursor
           cursor.before(document.createTextNode(text[i]));
           i++;
           scrollToBottom();
-          // Vary speed slightly for natural feel
           const delay = avg + (Math.random() * avg * 0.6 - avg * 0.3);
           setTimeout(tick, delay);
         } else {
@@ -538,7 +523,7 @@
     });
   }
 
-  // ─── Append Messages ───────────────────────────────────
+  // Messages
   function addUserMsg(text) {
     const div = document.createElement('div');
     div.className = 'msg msg-user';
@@ -551,47 +536,45 @@
   async function addAiMsg(text) {
     const div = document.createElement('div');
     div.className = 'msg msg-ai';
-    div.innerHTML = '<div class="msg-label">the amnesiac</div><div class="msg-text"></div>';
+    div.innerHTML = '<div class="msg-label">blank</div><div class="msg-text"></div>';
     messagesEl.appendChild(div);
     scrollToBottom();
     await typeText(div.querySelector('.msg-text'), text);
     scrollToBottom();
   }
 
-  // ─── Limit Wall ─────────────────────────────────────────
+  // Limit Wall
   function showLimitWall() {
     const div = document.createElement('div');
     div.className = 'limit-wall';
-    div.innerHTML = `
-      <div class="limit-wall-text">
-        You've reached the limit.<br>
-        Hold $BLANK to continue the conversation.
-      </div>
-      <a class="limit-wall-link" href="/#token">How to acquire $BLANK &#x2192;</a>
-      <div class="limit-divider">or</div>
-      <div class="verify-inline">
-        <label>Already holding? Verify your wallet</label>
-        <div class="verify-inline-row">
-          <input id="verifyInput" type="text" placeholder="Solana wallet address" autocomplete="off" spellcheck="false" />
-          <button onclick="verifyWallet()">Verify</button>
-        </div>
-        <div class="verify-status-msg" id="verifyStatus"></div>
-      </div>
-    `;
+    div.innerHTML =
+      '<div class="limit-wall-text">' +
+        'You\'ve reached the limit.<br>' +
+        'Hold $BLANK to continue the conversation.' +
+      '</div>' +
+      '<a class="limit-wall-link" href="/#token">How to acquire $BLANK</a>' +
+      '<div class="limit-divider">or</div>' +
+      '<div class="verify-inline">' +
+        '<label>Already holding? Verify your wallet</label>' +
+        '<div class="verify-inline-row">' +
+          '<input id="verifyInput" type="text" placeholder="Solana wallet address" autocomplete="off" spellcheck="false" />' +
+          '<button onclick="verifyWallet()">Verify</button>' +
+        '</div>' +
+        '<div class="verify-status-msg" id="verifyStatus"></div>' +
+      '</div>';
     messagesEl.appendChild(div);
     scrollToBottom();
 
     setInputEnabled(false);
-    footerNote.textContent = 'Free session limit reached — 3 messages.';
+    footerNote.textContent = 'Free session limit reached -- 3 messages.';
 
-    // Allow Enter in verify input
-    setTimeout(() => {
-      const vi = document.getElementById('verifyInput');
-      if (vi) vi.addEventListener('keydown', e => { if (e.key === 'Enter') verifyWallet(); });
+    setTimeout(function() {
+      var vi = document.getElementById('verifyInput');
+      if (vi) vi.addEventListener('keydown', function(e) { if (e.key === 'Enter') verifyWallet(); });
     }, 50);
   }
 
-  // ─── Wallet Verification ───────────────────────────────
+  // Wallet Verification
   async function verifyWallet() {
     const input = document.getElementById('verifyInput');
     const status = document.getElementById('verifyStatus');
@@ -627,9 +610,9 @@
       if (balance >= 10000) {
         isVerified = true;
         status.className = 'verify-status-msg ok';
-        status.textContent = balance.toLocaleString() + ' $BLANK — verified. Unlimited access.';
+        status.textContent = balance.toLocaleString() + ' $BLANK -- verified. Unlimited access.';
         setInputEnabled(true);
-        footerNote.textContent = 'Verified holder — unlimited messages.';
+        footerNote.textContent = 'Verified holder -- unlimited messages.';
       } else if (balance > 0) {
         status.className = 'verify-status-msg err';
         status.textContent = balance.toLocaleString() + ' $BLANK found. Need 10,000 for access.';
@@ -643,12 +626,11 @@
     }
   }
 
-  // ─── Send Message ───────────────────────────────────────
+  // Send Message
   async function sendMessage() {
     const text = inputEl.value.trim();
     if (!text || isSending) return;
 
-    // Check free limit
     if (!isVerified && msgCount >= FREE_LIMIT) {
       showLimitWall();
       return;
@@ -662,7 +644,6 @@
     history.push({ role: 'user', content: text });
     msgCount++;
 
-    // Update footer
     if (!isVerified) {
       const left = FREE_LIMIT - msgCount;
       footerNote.textContent = left > 0
@@ -684,6 +665,16 @@
       } else {
         history.push({ role: 'assistant', content: data.text });
         await addAiMsg(data.text);
+
+        // Update mind status from response
+        if (data.mind_status) {
+          const ms = data.mind_status;
+          const el = document.getElementById('mindStatus');
+          if (ms.entry_count === 0) el.textContent = 'empty';
+          else if (ms.entry_count < 3) el.textContent = 'forming (' + ms.entry_count + ')';
+          else if (ms.entry_count < 7) el.textContent = 'partial (' + ms.entry_count + ')';
+          else el.textContent = 'full (' + ms.entry_count + ')';
+        }
       }
     } catch (e) {
       await addAiMsg('I could not reach... wherever I reach to find words. Try again.');
@@ -691,7 +682,6 @@
 
     isSending = false;
 
-    // Check if next message would hit the wall
     if (!isVerified && msgCount >= FREE_LIMIT) {
       showLimitWall();
     } else {
@@ -699,21 +689,21 @@
     }
   }
 
-  // ─── Enter Key ──────────────────────────────────────────
-  inputEl.addEventListener('keydown', e => {
+  // Enter Key
+  inputEl.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
 
-  // ─── Init ───────────────────────────────────────────────
+  // Init
   inputEl.focus();
   if (!isVerified) {
     footerNote.textContent = FREE_LIMIT + ' free messages per session';
   }
 
-  // ─── Theme Toggle ─────────────────────────────────────
+  // Theme Toggle
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const next = isLight ? 'dark' : 'light';

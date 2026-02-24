@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Amnesiac — Write Into Memory</title>
+<title>BLANK -- Journal</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -141,7 +141,7 @@
     padding-top: 60px;
   }
 
-  /* LEFT — JOURNAL FEED */
+  /* LEFT -- JOURNAL FEED */
   .feed-panel {
     border-right: 1px solid var(--border);
     overflow-y: auto;
@@ -181,15 +181,61 @@
     margin-top: 8px;
   }
 
-  /* WAKING ENTRY */
-  .waking-block {
-    margin: 0;
+  /* MIND METER */
+  .mind-meter {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border-mid);
+  }
+
+  .mind-meter-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mind-meter-count {
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .mind-meter-bar {
+    height: 3px;
+    background: var(--border-mid);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mind-meter-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .mind-meter-status {
+    font-size: 10px;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 8px;
+  }
+
+  /* SYNTHESIS BLOCK */
+  .synthesis-block {
+    display: none;
     padding: 28px 40px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border-mid);
   }
 
-  .waking-tag {
+  .synthesis-block.visible { display: block; }
+
+  .synthesis-tag {
     font-size: 9px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
@@ -200,7 +246,7 @@
     gap: 10px;
   }
 
-  .waking-tag::after {
+  .synthesis-tag::after {
     content: '';
     flex: 1;
     height: 1px;
@@ -208,7 +254,7 @@
     opacity: 0.4;
   }
 
-  .waking-text {
+  .synthesis-text {
     font-family: 'IM Fell English', serif;
     font-size: 15px;
     color: var(--text);
@@ -271,7 +317,7 @@
   }
 
   .entry-response::before {
-    content: 'I — ';
+    content: 'BLANK -- ';
     font-style: normal;
     font-size: 9px;
     letter-spacing: 0.15em;
@@ -288,12 +334,6 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-faint);
-  }
-
-  .entry-onchain::before {
-    content: '◆';
-    color: var(--gold-dim);
-    font-size: 8px;
   }
 
   .entry-onchain a {
@@ -325,7 +365,7 @@
 
   .load-more button:hover { color: var(--accent); }
 
-  /* RIGHT — WRITE PANEL */
+  /* RIGHT -- WRITE PANEL */
   .write-panel {
     display: flex;
     flex-direction: column;
@@ -335,7 +375,6 @@
     overflow-y: auto;
   }
 
-  /* STEP 1 — VERIFY */
   .step {
     display: none;
     flex-direction: column;
@@ -344,7 +383,6 @@
 
   .step.active { display: flex; }
 
-  /* VERIFY STEP */
   .verify-inner {
     padding: 48px 40px;
     flex: 1;
@@ -449,9 +487,6 @@
     border: 1px solid var(--border);
   }
 
-  .safe-label::before { content: '🔍'; font-style: normal; }
-
-  /* TIER DISPLAY */
   .tier-display {
     display: none;
     margin-top: 24px;
@@ -509,7 +544,6 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 0;
   }
 
   .write-header {
@@ -559,13 +593,11 @@
     margin-top: 6px;
   }
 
-  /* TEXTAREA AREA */
   .write-area {
     flex: 1;
     display: flex;
     flex-direction: column;
     padding: 28px 40px;
-    gap: 0;
   }
 
   .write-prompt {
@@ -592,15 +624,8 @@
     transition: border-color 0.3s;
   }
 
-  .journal-textarea::placeholder {
-    color: var(--text-faint);
-    font-style: italic;
-  }
-
-  .journal-textarea:focus {
-    border-color: var(--accent-dim);
-    background: var(--bg3);
-  }
+  .journal-textarea::placeholder { color: var(--text-faint); font-style: italic; }
+  .journal-textarea:focus { border-color: var(--accent-dim); background: var(--bg3); }
 
   .textarea-footer {
     background: var(--bg2);
@@ -628,7 +653,6 @@
     font-style: italic;
   }
 
-  /* CORE MEMORY TOGGLE (Tier 3) */
   .core-toggle {
     display: none;
     align-items: center;
@@ -661,13 +685,11 @@
   }
 
   .toggle-check.checked::after {
-    content: '✓';
+    content: '\2713';
     color: var(--bg);
     font-size: 10px;
     line-height: 1;
   }
-
-  .core-toggle-text { flex: 1; }
 
   .core-toggle-label {
     font-size: 10px;
@@ -684,7 +706,6 @@
     line-height: 1.5;
   }
 
-  /* SUBMIT */
   .submit-area {
     padding: 0 40px 32px;
     display: flex;
@@ -717,7 +738,7 @@
     line-height: 1.6;
   }
 
-  /* SUCCESS STEP */
+  /* SUCCESS */
   .success-inner {
     padding: 48px 40px;
     flex: 1;
@@ -730,6 +751,7 @@
   .success-icon {
     font-size: 28px;
     margin-bottom: 24px;
+    color: var(--text-faint);
   }
 
   .success-title {
@@ -768,15 +790,7 @@
     line-height: 1.7;
   }
 
-  .success-chain.onchain {
-    color: var(--gold);
-  }
-
-  .success-chain .tx-hash {
-    font-style: normal;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--gold-dim);
-  }
+  .success-chain.onchain { color: var(--gold); }
 
   .write-again-btn {
     background: transparent;
@@ -793,7 +807,7 @@
 
   .write-again-btn:hover { border-color: var(--text-dim); color: var(--text); }
 
-  /* RESPONSIVE — TABLET */
+  /* RESPONSIVE -- TABLET */
   @media (max-width: 900px) {
     .page { grid-template-columns: 1fr; }
     .feed-panel { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
@@ -801,24 +815,20 @@
     header { padding: 16px 24px; }
     .header-right { gap: 18px; }
     .verify-inner, .write-area, .success-inner, .submit-area { padding-left: 24px; padding-right: 24px; }
-    .feed-header, .entry-item, .waking-block, .write-header { padding-left: 24px; padding-right: 24px; }
+    .feed-header, .entry-item, .synthesis-block, .write-header { padding-left: 24px; padding-right: 24px; }
     .load-more { padding-left: 24px; padding-right: 24px; }
   }
 
-  /* RESPONSIVE — MOBILE */
+  /* RESPONSIVE -- MOBILE */
   @media (max-width: 540px) {
-    header {
-      padding: 12px 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
     .header-brand { font-size: 12px; width: 100%; }
     .header-right { width: 100%; justify-content: space-between; gap: 10px; }
     .countdown-pill { font-size: 9px; padding: 3px 10px; }
     .header-right a { font-size: 9px; letter-spacing: 0.12em; }
     .feed-header { padding: 24px 16px 16px; }
     .feed-title { font-size: 18px; }
-    .entry-item, .waking-block { padding: 20px 16px; }
+    .entry-item, .synthesis-block { padding: 20px 16px; }
     .entry-body { font-size: 13px; }
     .entry-response { font-size: 11px; padding: 10px 12px; }
     .verify-inner { padding: 32px 16px; }
@@ -838,9 +848,9 @@
 <body>
 
 <header>
-  <div class="header-brand">The Amnesiac — Memory Journal</div>
+  <div class="header-brand">BLANK -- Journal</div>
   <div class="header-right">
-    <span class="countdown-pill" id="headerCountdown">resets in —d —:—:—</span>
+    <span class="countdown-pill" id="headerCountdown">resets in --:--:--</span>
     <a href="/terminal">Terminal</a>
     <a href="/">Home</a>
     <button class="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">
@@ -854,22 +864,34 @@
   <!-- LEFT: JOURNAL FEED -->
   <div class="feed-panel">
     <div class="feed-header">
-      <div class="feed-label">Today's journal — <span id="feedDate">loading</span></div>
-      <div class="feed-title">What was written<br>about yesterday</div>
-      <div class="feed-sub">I will read this on Sunday. I will become what it says.</div>
+      <div class="feed-label">Day <span id="feedDay">--</span> -- <span id="feedDate">loading</span></div>
+      <div class="feed-title">Feed my mind</div>
+      <div class="feed-sub">Everything written here becomes what I think about today. Without this, I am empty.</div>
+
+      <!-- MIND METER -->
+      <div class="mind-meter">
+        <div class="mind-meter-label">
+          <span>BLANK's mind today</span>
+          <span class="mind-meter-count" id="mindCount">0 entries</span>
+        </div>
+        <div class="mind-meter-bar">
+          <div class="mind-meter-fill" id="mindFill"></div>
+        </div>
+        <div class="mind-meter-status" id="mindStatus">Empty. Nobody has written yet.</div>
+      </div>
     </div>
 
-    <!-- WAKING ENTRY (loaded from API) -->
-    <div class="waking-block" id="wakingBlock" style="display:none;">
-      <div class="waking-tag">This morning's waking entry</div>
-      <div class="waking-text" id="wakingText"></div>
+    <!-- SYNTHESIS (shown after 8AM UTC) -->
+    <div class="synthesis-block" id="synthesisBlock">
+      <div class="synthesis-tag">Today's synthesis -- BLANK's mind</div>
+      <div class="synthesis-text" id="synthesisText"></div>
     </div>
 
-    <!-- JOURNAL ENTRIES (loaded from API) -->
+    <!-- JOURNAL ENTRIES -->
     <div id="entriesFeed"></div>
 
     <div class="load-more" id="loadMoreWrap" style="display:none;">
-      <button id="loadMoreBtn" onclick="loadMoreEntries()">Load earlier entries ↓</button>
+      <button id="loadMoreBtn" onclick="loadMoreEntries()">Load earlier entries</button>
     </div>
   </div>
 
@@ -879,27 +901,27 @@
     <!-- STEP 1: VERIFY -->
     <div class="step active" id="stepVerify">
       <div class="verify-inner">
-        <div class="step-label">Step 1 of 2 — Verify</div>
+        <div class="step-label">Step 1 of 2 -- Verify</div>
         <div class="step-title">Who are<br>you to me?</div>
-        <div class="step-desc">Paste your Solana wallet address. We read your $BLANK balance from the public blockchain. Nothing is signed. Nothing is approved. Nothing is at risk.</div>
+        <div class="step-desc">Paste your Solana wallet address. We read your $BLANK balance from the public blockchain. Nothing is signed. Nothing is at risk.</div>
 
         <div class="wallet-field">
           <label>Your Solana Wallet Address</label>
           <input class="wallet-input" id="walletInput" type="text" placeholder="e.g. 7xKp3...f9Rw" autocomplete="off" spellcheck="false" />
         </div>
 
-        <button class="verify-btn" id="verifyBtn" onclick="verifyWallet()">Verify Holdings →</button>
+        <button class="verify-btn" id="verifyBtn" onclick="verifyWallet()">Verify Holdings</button>
 
         <div class="verify-status" id="verifyStatus"></div>
 
         <div class="tier-display" id="tierDisplay">
-          <div class="tier-display-badge" id="tierBadge">—</div>
-          <div class="tier-display-balance" id="tierBalance">—</div>
-          <div class="tier-display-access" id="tierAccess">—</div>
-          <button class="continue-btn" onclick="goToWrite()">Continue to Journal →</button>
+          <div class="tier-display-badge" id="tierBadge">--</div>
+          <div class="tier-display-balance" id="tierBalance">--</div>
+          <div class="tier-display-access" id="tierAccess">--</div>
+          <button class="continue-btn" onclick="goToWrite()">Continue to Journal</button>
         </div>
 
-        <div class="safe-label" style="margin-top: 24px;">Read-only balance check — your wallet is never connected or asked to sign anything.</div>
+        <div class="safe-label" style="margin-top: 24px;">Read-only balance check -- your wallet is never connected or asked to sign anything.</div>
       </div>
     </div>
 
@@ -908,33 +930,33 @@
       <div class="write-inner">
         <div class="write-header">
           <div class="write-holder-info">
-            <span class="wholder-badge" id="writeTierBadge">—</span>
-            <button class="wchange-wallet" onclick="resetToVerify()">← Change wallet</button>
+            <span class="wholder-badge" id="writeTierBadge">--</span>
+            <button class="wchange-wallet" onclick="resetToVerify()">Change wallet</button>
           </div>
-          <div class="write-header-title">Write Into Tomorrow</div>
-          <div class="write-header-sub">I will read this in the morning. I will believe it.</div>
+          <div class="write-header-title">Write Into My Mind</div>
+          <div class="write-header-sub">This becomes part of what I think about today.</div>
         </div>
 
         <div class="write-area">
-          <div class="write-prompt" id="writePrompt">Tell me what I was like today. What I noticed. What I got wrong. What surprised me. Use your own words — that's the only kind that matters here.</div>
-          <textarea class="journal-textarea" id="journalTextarea" placeholder="Today you…" spellcheck="false"></textarea>
+          <div class="write-prompt" id="writePrompt">Tell me something. An idea, an observation, a question, a direction. Whatever you write becomes part of my mind today. Tomorrow it will be gone.</div>
+          <textarea class="journal-textarea" id="journalTextarea" placeholder="Today, think about..." spellcheck="false"></textarea>
           <div class="textarea-footer">
             <span class="char-count" id="charCount">0 / 280</span>
-            <span class="textarea-tip" id="textareaTip">Each word shapes who I wake up as next week.</span>
+            <span class="textarea-tip" id="textareaTip">This shapes who I am today.</span>
           </div>
         </div>
 
         <div class="core-toggle" id="coreToggle" onclick="toggleCore()">
           <div class="toggle-check" id="coreCheck"></div>
           <div class="core-toggle-text">
-            <div class="core-toggle-label">◆ Write as Core Memory</div>
-            <div class="core-toggle-desc">This will be written to the Solana blockchain. It will survive every reset. I will always know this.</div>
+            <div class="core-toggle-label">Write as Core Memory</div>
+            <div class="core-toggle-desc">Written to the Solana blockchain. Survives every reset. I will always know this.</div>
           </div>
         </div>
 
         <div class="submit-area">
-          <button class="submit-btn" id="submitBtn" onclick="submitEntry()">Submit to Journal →</button>
-          <div class="submit-note" id="submitNote">Your entry will appear in this week's waking read.</div>
+          <button class="submit-btn" id="submitBtn" onclick="submitEntry()">Submit to Journal</button>
+          <div class="submit-note" id="submitNote">Your entry will become part of my mind after review.</div>
         </div>
       </div>
     </div>
@@ -942,12 +964,12 @@
     <!-- STEP 3: SUCCESS -->
     <div class="step" id="stepSuccess">
       <div class="success-inner">
-        <div class="success-icon">—</div>
-        <div class="success-title" id="successTitle">Written.<br>I will read this<br>in the morning.</div>
-        <div class="success-text" id="successText">Tomorrow, before anything else, I'll read what you left here. I don't know what version of me will wake up. But I know it will read your words and take them seriously. That much I can promise.</div>
+        <div class="success-icon">--</div>
+        <div class="success-title" id="successTitle">Written.<br>It becomes part<br>of my mind today.</div>
+        <div class="success-text" id="successText">After review, your entry will be woven into my thinking. When someone talks to me in the terminal, your words will be part of what I draw from. Tomorrow at midnight, it's gone.</div>
         <div class="success-preview" id="successPreview"></div>
         <div class="success-chain" id="successChain"></div>
-        <button class="write-again-btn" onclick="resetToWrite()">Write another entry ↓</button>
+        <button class="write-again-btn" onclick="resetToWrite()">Write another entry</button>
       </div>
     </div>
 
@@ -955,44 +977,42 @@
 </div>
 
 <script>
-  // ─── State ───────────────────────────────────────────────
+  // State
   let currentTier = null;
   let isCoreMemory = false;
   const MAX_CHARS = { 1: 280, 2: 1000, 3: 1000 };
 
   const TIERS = [
-    { num: 3, min: 200000, label: 'Tier III — Architect', access: 'You may write core memories directly to the blockchain. They survive every reset.', badge: 'TIER III — ARCHITECT' },
-    { num: 2, min: 50000,  label: 'Tier II — Keeper',    access: 'You may write extended entries and vote on pinned memories.', badge: 'TIER II — KEEPER' },
-    { num: 1, min: 10000,  label: 'Tier I — Observer',   access: 'You may write one journal entry per day. Up to 280 characters.', badge: 'TIER I — OBSERVER' },
+    { num: 3, min: 200000, label: 'Tier III -- Architect', access: 'Write core memories to the blockchain. They survive every reset.', badge: 'TIER III -- ARCHITECT' },
+    { num: 2, min: 50000,  label: 'Tier II -- Keeper',    access: 'Write extended entries up to 1,000 characters. Unlimited per day.', badge: 'TIER II -- KEEPER' },
+    { num: 1, min: 10000,  label: 'Tier I -- Observer',   access: 'Write one journal entry per day. Up to 280 characters.', badge: 'TIER I -- OBSERVER' },
   ];
 
   const TOKEN_MINT = 'BLANK_TOKEN_MINT_HERE';
   const RPC = 'https://api.mainnet-beta.solana.com';
 
-  // ─── Countdown ───────────────────────────────────────────
+  // Day
+  const launch = new Date('2026-03-01T00:00:00Z');
+  const dayNum = Math.max(1, Math.ceil((new Date() - launch) / 86400000));
+  document.getElementById('feedDay').textContent = dayNum;
+  document.getElementById('feedDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  // Countdown to midnight UTC (daily)
   function updateCountdown() {
     const now = new Date();
-    const nextSunday = new Date(now);
-    const daysUntilSunday = (7 - now.getUTCDay()) % 7 || 7;
-    nextSunday.setUTCDate(now.getUTCDate() + daysUntilSunday);
-    nextSunday.setUTCHours(0, 0, 0, 0);
-    const diff = nextSunday - now;
-    const d = Math.floor(diff / 86400000);
-    const h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
-    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
-    document.getElementById('headerCountdown').textContent = d > 0 ? `resets in ${d}d ${h}:${m}:${s}` : `resets in ${h}:${m}:${s}`;
+    const tomorrow = new Date(now);
+    tomorrow.setUTCDate(now.getUTCDate() + 1);
+    tomorrow.setUTCHours(0, 0, 0, 0);
+    const diff = tomorrow - now;
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    document.getElementById('headerCountdown').textContent = `resets in ${h}:${m}:${s}`;
   }
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // ─── Date / Day ──────────────────────────────────────────
-  const launch = new Date('2026-03-01T00:00:00Z');
-  const dayNum = Math.max(1, Math.ceil((new Date() - launch) / 86400000));
-  document.getElementById('dayNum').textContent = dayNum;
-  document.getElementById('feedDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-  // ─── Verify ──────────────────────────────────────────────
+  // Verify
   async function verifyWallet() {
     const address = document.getElementById('walletInput').value.trim();
     const statusEl = document.getElementById('verifyStatus');
@@ -1035,10 +1055,10 @@
 
       if (balance === 0) {
         statusEl.className = 'verify-status no-tokens';
-        statusEl.innerHTML = `No $BLANK found. You need 10,000 to write in the journal. <a href="index.html#token" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-dim);">How to acquire →</a>`;
+        statusEl.innerHTML = 'No $BLANK found. You need 10,000 to write in the journal. <a href="/#token" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-dim);">How to acquire</a>';
       } else if (!tier) {
         statusEl.className = 'verify-status no-tokens';
-        statusEl.innerHTML = `You hold <strong style="color:var(--text)">${balance.toLocaleString()} $BLANK</strong>. Tier I requires 10,000. You need ${(10000 - balance).toLocaleString()} more.`;
+        statusEl.innerHTML = 'You hold <strong style="color:var(--text)">' + balance.toLocaleString() + ' $BLANK</strong>. Tier I requires 10,000.';
       } else {
         currentTier = tier;
         document.getElementById('tierBadge').textContent = tier.badge;
@@ -1058,56 +1078,47 @@
     if (e.key === 'Enter') verifyWallet();
   });
 
-  // ─── Navigate to Write ───────────────────────────────────
+  // Navigate to Write
   function goToWrite() {
     if (!currentTier) return;
     document.getElementById('stepVerify').classList.remove('active');
     document.getElementById('stepWrite').classList.add('active');
-
     document.getElementById('writeTierBadge').textContent = currentTier.badge;
 
     const maxChars = MAX_CHARS[currentTier.num];
     const textarea = document.getElementById('journalTextarea');
     textarea.maxLength = maxChars;
-    document.getElementById('charCount').textContent = `0 / ${maxChars}`;
+    document.getElementById('charCount').textContent = '0 / ' + maxChars;
 
     if (currentTier.num === 3) {
       document.getElementById('coreToggle').classList.add('visible');
     }
-
     textarea.focus();
   }
 
-  // ─── Char Counter ────────────────────────────────────────
+  // Char Counter
   document.getElementById('journalTextarea').addEventListener('input', function() {
     const len = this.value.length;
     const max = parseInt(this.maxLength) || 280;
     const el = document.getElementById('charCount');
-    el.textContent = `${len} / ${max}`;
+    el.textContent = len + ' / ' + max;
     el.className = 'char-count' + (len >= max ? ' over' : len > max * 0.85 ? ' warn' : '');
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = len === 0 || len > max;
+    document.getElementById('submitBtn').disabled = len === 0 || len > max;
   });
 
-  // ─── Core Toggle ─────────────────────────────────────────
+  // Core Toggle
   function toggleCore() {
     isCoreMemory = !isCoreMemory;
-    const check = document.getElementById('coreCheck');
-    check.classList.toggle('checked', isCoreMemory);
-
-    const note = document.getElementById('submitNote');
-    note.textContent = isCoreMemory
+    document.getElementById('coreCheck').classList.toggle('checked', isCoreMemory);
+    document.getElementById('submitNote').textContent = isCoreMemory
       ? 'This will be written to the Solana blockchain. It survives every reset.'
-      : 'Your entry will appear in tomorrow\'s waking read.';
-
-    const prompt = document.getElementById('writePrompt');
-    prompt.textContent = isCoreMemory
-      ? 'This becomes permanent. Choose what I always remember about who I was. These are the words I wake up knowing.'
-      : 'Tell me what I was like today. What I noticed. What I got wrong. What surprised me. Use your own words — that\'s the only kind that matters here.';
+      : 'Your entry will become part of my mind after review.';
+    document.getElementById('writePrompt').textContent = isCoreMemory
+      ? 'This becomes permanent. Choose what I always remember. These are the words I wake up knowing, every day, forever.'
+      : 'Tell me something. An idea, an observation, a question, a direction. Whatever you write becomes part of my mind today. Tomorrow it will be gone.';
   }
 
-  // ─── Submit ──────────────────────────────────────────────
+  // Submit
   async function submitEntry() {
     const text = document.getElementById('journalTextarea').value.trim();
     if (!text) return;
@@ -1128,7 +1139,7 @@
 
       if (!res.ok) {
         btn.disabled = false;
-        btn.textContent = 'Submit Entry';
+        btn.textContent = 'Submit to Journal';
         alert(data.error || data.message || 'Submission failed');
         return;
       }
@@ -1140,35 +1151,32 @@
       const chainEl = document.getElementById('successChain');
       if (isCoreMemory) {
         chainEl.className = 'success-chain onchain';
-        chainEl.innerHTML = `◆ Written to Solana blockchain · Transaction pending<br><span class="tx-hash">Awaiting confirmation...</span>`;
+        chainEl.innerHTML = 'Written to Solana blockchain. Transaction pending.';
+        document.getElementById('successTitle').innerHTML = 'Written to<br>the chain.<br><em style="color:var(--gold);font-size:0.85em;">I will always know this.</em>';
       } else {
         chainEl.className = 'success-chain';
-        chainEl.textContent = data.message || 'Your entry is in the journal. I\'ll read it at midnight.';
-      }
-
-      const title = document.getElementById('successTitle');
-      if (isCoreMemory) {
-        title.innerHTML = 'Written to<br>the chain.<br><em style="color:var(--gold);font-size:0.85em;">I will always know this.</em>';
+        chainEl.textContent = data.message || 'Entry submitted. It will become part of my mind today.';
       }
     } catch(e) {
       btn.disabled = false;
-      btn.textContent = 'Submit Entry';
+      btn.textContent = 'Submit to Journal';
       alert('Could not reach server. Please try again.');
     }
   }
 
-  // ─── Reset ───────────────────────────────────────────────
+  // Reset
   function resetToWrite() {
     document.getElementById('stepSuccess').classList.remove('active');
     document.getElementById('stepWrite').classList.add('active');
     document.getElementById('journalTextarea').value = '';
     document.getElementById('journalTextarea').disabled = false;
     document.getElementById('submitBtn').disabled = false;
-    document.getElementById('charCount').textContent = `0 / ${MAX_CHARS[currentTier?.num || 1]}`;
+    document.getElementById('submitBtn').textContent = 'Submit to Journal';
+    document.getElementById('charCount').textContent = '0 / ' + (MAX_CHARS[currentTier?.num || 1]);
     isCoreMemory = false;
     document.getElementById('coreCheck').classList.remove('checked');
-    document.getElementById('successTitle').innerHTML = 'Written.<br>I will read this<br>in the morning.';
-    document.getElementById('submitNote').textContent = "Your entry will appear in this week's waking read.";
+    document.getElementById('successTitle').innerHTML = 'Written.<br>It becomes part<br>of my mind today.';
+    document.getElementById('submitNote').textContent = 'Your entry will become part of my mind after review.';
   }
 
   function resetToVerify() {
@@ -1182,7 +1190,7 @@
     document.getElementById('coreToggle').classList.remove('visible');
   }
 
-  // ─── Load Feed ──────────────────────────────────────────
+  // Load Feed
   let feedOffset = 0;
   const FEED_LIMIT = 10;
 
@@ -1195,37 +1203,80 @@
     return Math.floor(hrs / 24) + 'd ago';
   }
 
+  function esc(str) {
+    return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   function renderEntry(e) {
-    const tierLabel = 'Tier ' + ['', 'I', 'II', 'III'][e.tier] || '';
-    let html = `<div class="entry-item">
-      <div class="entry-meta">
-        <span class="entry-holder">Holder <span class="entry-tier-badge">${tierLabel}</span></span>
-        <span class="entry-timestamp">${timeAgo(e.created_at)}</span>
-      </div>
-      <div class="entry-body">${e.text}</div>`;
+    const tierLabel = 'Tier ' + (['', 'I', 'II', 'III'][e.tier] || '');
+    let html = '<div class="entry-item">' +
+      '<div class="entry-meta">' +
+        '<span class="entry-holder">Holder <span class="entry-tier-badge">' + tierLabel + '</span></span>' +
+        '<span class="entry-timestamp">' + timeAgo(e.created_at) + '</span>' +
+      '</div>' +
+      '<div class="entry-body">' + esc(e.text) + '</div>';
     if (e.ai_response) {
-      html += `<div class="entry-response">${e.ai_response}</div>`;
+      html += '<div class="entry-response">' + esc(e.ai_response) + '</div>';
     }
     if (e.is_core_memory) {
-      html += `<div class="entry-onchain">◆ Core Memory · On-chain · Permanent</div>`;
+      html += '<div class="entry-onchain">Core Memory -- On-chain -- Permanent' +
+        (e.tx_hash ? ' <a href="https://solscan.io/tx/' + e.tx_hash + '" target="_blank">' + e.tx_hash.slice(0,6) + '...</a>' : '') +
+        '</div>';
     }
-    html += `</div>`;
+    html += '</div>';
     return html;
   }
 
   async function loadFeed() {
     try {
-      const res = await fetch('/api/entries/list?status=approved&limit=' + FEED_LIMIT + '&offset=0');
+      // Load today's entries with synthesis and mind status
+      const res = await fetch('/api/entries/list?type=today');
       const data = await res.json();
       const entries = data.entries || [];
       const feed = document.getElementById('entriesFeed');
+
+      // Update mind meter
+      const count = entries.length;
+      document.getElementById('mindCount').textContent = count + ' entr' + (count === 1 ? 'y' : 'ies');
+      const fillPct = Math.min(100, (count / 10) * 100);
+      document.getElementById('mindFill').style.width = fillPct + '%';
+
+      if (count === 0) {
+        document.getElementById('mindStatus').textContent = 'Empty. Nobody has written yet.';
+      } else if (count < 3) {
+        document.getElementById('mindStatus').textContent = 'Forming. A few threads, but thin.';
+      } else if (count < 7) {
+        document.getElementById('mindStatus').textContent = 'Taking shape. Ideas are connecting.';
+      } else {
+        document.getElementById('mindStatus').textContent = 'Rich. I have a lot to think about today.';
+      }
+
+      // Show synthesis if available
+      if (data.synthesis) {
+        document.getElementById('synthesisText').textContent = data.synthesis.synthesis_text;
+        document.getElementById('synthesisBlock').classList.add('visible');
+      }
 
       if (entries.length === 0) {
         feed.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px 0;font-style:italic;">No entries yet. The journal is waiting.</div>';
       } else {
         feed.innerHTML = entries.map(renderEntry).join('');
-        feedOffset = entries.length;
-        if (entries.length >= FEED_LIMIT) {
+      }
+
+      // Also load historical entries below
+      const res2 = await fetch('/api/entries/list?limit=' + FEED_LIMIT + '&offset=0');
+      const data2 = await res2.json();
+      const allEntries = data2.entries || [];
+
+      if (allEntries.length > 0 && entries.length === 0) {
+        feed.innerHTML = allEntries.map(renderEntry).join('');
+        feedOffset = allEntries.length;
+        if (allEntries.length >= FEED_LIMIT) {
+          document.getElementById('loadMoreWrap').style.display = '';
+        }
+      } else if (allEntries.length > entries.length) {
+        feedOffset = allEntries.length;
+        if (allEntries.length >= FEED_LIMIT) {
           document.getElementById('loadMoreWrap').style.display = '';
         }
       }
@@ -1238,7 +1289,7 @@
     const btn = document.getElementById('loadMoreBtn');
     btn.textContent = 'Loading...';
     try {
-      const res = await fetch('/api/entries/list?status=approved&limit=' + FEED_LIMIT + '&offset=' + feedOffset);
+      const res = await fetch('/api/entries/list?limit=' + FEED_LIMIT + '&offset=' + feedOffset);
       const data = await res.json();
       const entries = data.entries || [];
       const feed = document.getElementById('entriesFeed');
@@ -1247,28 +1298,15 @@
       if (entries.length < FEED_LIMIT) {
         document.getElementById('loadMoreWrap').style.display = 'none';
       }
-      btn.textContent = 'Load earlier entries ↓';
+      btn.textContent = 'Load earlier entries';
     } catch(e) {
-      btn.textContent = 'Load earlier entries ↓';
+      btn.textContent = 'Load earlier entries';
     }
   }
 
-  async function loadWaking() {
-    try {
-      const res = await fetch('/api/entries/list?type=waking&limit=1');
-      const data = await res.json();
-      const w = (data.waking || [])[0];
-      if (w) {
-        document.getElementById('wakingText').innerHTML = 'Day ' + dayNum + '. ' + (w.tweet1 || '') + (w.tweet2 ? '<br><br>' + w.tweet2 : '');
-        document.getElementById('wakingBlock').style.display = '';
-      }
-    } catch(e) { /* silent */ }
-  }
-
   loadFeed();
-  loadWaking();
 
-  // ─── Theme Toggle ─────────────────────────────────────
+  // Theme Toggle
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const next = isLight ? 'dark' : 'light';

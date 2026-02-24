@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Amnesiac — Admin</title>
+<title>BLANK -- Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -273,7 +273,7 @@
   }
 
   .card-response::before {
-    content: 'AI response: ';
+    content: 'BLANK -- ';
     font-style: normal;
     color: var(--text-faint);
   }
@@ -317,7 +317,7 @@
   .btn-primary:hover { opacity: 0.85; }
   .btn:disabled { opacity: 0.3; cursor: default; }
 
-  /* WAKING COMPOSER */
+  /* COMPOSER */
   .composer {
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -486,6 +486,95 @@
 
   .tweet-edit.visible { display: block; }
 
+  /* SYNTHESIS DISPLAY */
+  .synthesis-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .synthesis-box .label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .synthesis-box .content {
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.9;
+    white-space: pre-wrap;
+  }
+
+  .synthesis-box .empty-state {
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  /* DECISION COMPOSER */
+  .decision-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    font-size: 12px;
+  }
+
+  .decision-status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  .decision-status .dot.active { background: var(--green); }
+  .decision-status .dot.pending { background: var(--orange); }
+
+  /* DAILY CYCLE INDICATOR */
+  .cycle-bar {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+
+  .cycle-step {
+    flex: 1;
+    padding: 10px 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    transition: all 0.3s;
+  }
+
+  .cycle-step.active {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    background: var(--nav-active-bg);
+  }
+
+  .cycle-step.done {
+    color: var(--green);
+    border-color: rgba(90,138,96,0.2);
+  }
+
+  .cycle-step .time {
+    display: block;
+    font-size: 8px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
   /* ALERTS */
   .alert {
     padding: 12px 16px;
@@ -539,7 +628,7 @@
   .theme-toggle:hover { color: var(--text); background: var(--nav-hover-bg); }
   .theme-toggle svg { flex-shrink: 0; }
 
-  /* RESPONSIVE — TABLET */
+  /* RESPONSIVE -- TABLET */
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; }
     .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; gap: 4px; padding: 12px 16px; border-right: none; border-bottom: 1px solid var(--border); }
@@ -550,9 +639,11 @@
     .stats-grid { grid-template-columns: 1fr 1fr; }
     .generate-grid { grid-template-columns: 1fr; }
     .main { padding: 20px; }
+    .cycle-bar { flex-wrap: wrap; }
+    .cycle-step { min-width: 60px; }
   }
 
-  /* RESPONSIVE — MOBILE */
+  /* RESPONSIVE -- MOBILE */
   @media (max-width: 540px) {
     #loginScreen { padding: 0 20px; }
     #loginScreen h1 { font-size: 22px; }
@@ -564,6 +655,7 @@
     .card-body { padding: 12px 16px; }
     .card-head { padding: 12px 16px 10px; }
     .card-foot { padding: 10px 16px; }
+    .cycle-bar { flex-direction: column; }
   }
 </style>
 </head>
@@ -572,8 +664,8 @@
 <!-- LOGIN -->
 <div id="loginScreen">
   <div>
-    <h1>The Amnesiac</h1>
-    <p>Admin Panel — Enter your secret key</p>
+    <h1>BLANK</h1>
+    <p>Admin Panel -- Enter your secret key</p>
   </div>
   <div style="position:relative;width:100%;max-width:320px;">
     <input id="adminKeyInput" type="password" placeholder="Admin secret key..." />
@@ -582,7 +674,7 @@
       <svg id="eyeOffIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
     </button>
   </div>
-  <button class="btn btn-primary" onclick="login()">Enter →</button>
+  <button class="btn btn-primary" onclick="login()">Enter</button>
   <div id="loginError" style="color:var(--red);font-size:11px;font-style:italic;"></div>
 </div>
 
@@ -593,15 +685,16 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-head">
-      <div class="brand">Admin Panel</div>
-      <div class="day">Day <span id="sidebarDay">—</span></div>
-      <div class="reset" id="sidebarReset">resets in —d —:—:—</div>
+      <div class="brand">BLANK Admin</div>
+      <div class="day">Day <span id="sidebarDay">--</span></div>
+      <div class="reset" id="sidebarReset">resets in --:--:--</div>
     </div>
 
     <div class="nav-section">
       <div class="nav-section-label">Today</div>
       <button class="nav-btn active" onclick="showPanel('dashboard')" id="nav-dashboard">Overview</button>
-      <button class="nav-btn" onclick="showPanel('waking')" id="nav-waking">Waking Entry</button>
+      <button class="nav-btn" onclick="showPanel('synthesis')" id="nav-synthesis">Synthesis</button>
+      <button class="nav-btn" onclick="showPanel('decision')" id="nav-decision">Decisions</button>
     </div>
 
     <div class="nav-section">
@@ -632,79 +725,133 @@
     <!-- DASHBOARD -->
     <div class="panel active" id="panel-dashboard">
       <div class="panel-title">Overview</div>
-      <div class="panel-sub">What's happening today.</div>
+      <div class="panel-sub">Day <span class="dash-day"></span> -- Daily cycle status.</div>
+
+      <div class="cycle-bar" id="cycleBar">
+        <div class="cycle-step" data-hour="0"><span>Reset</span><span class="time">00:00</span></div>
+        <div class="cycle-step" data-hour="0.1"><span>Journal</span><span class="time">00:00</span></div>
+        <div class="cycle-step" data-hour="8"><span>Close</span><span class="time">08:00</span></div>
+        <div class="cycle-step" data-hour="8.1"><span>Terminal</span><span class="time">08:00</span></div>
+        <div class="cycle-step" data-hour="12"><span>Decision</span><span class="time">12:00</span></div>
+        <div class="cycle-step" data-hour="18"><span>Execute</span><span class="time">18:00</span></div>
+        <div class="cycle-step" data-hour="23"><span>Final</span><span class="time">23:00</span></div>
+      </div>
+
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-num" id="statPending">—</div><div class="stat-label">Pending Entries</div></div>
-        <div class="stat-box"><div class="stat-num" id="statApproved">—</div><div class="stat-label">Approved Today</div></div>
-        <div class="stat-box"><div class="stat-num" id="statQueue">—</div><div class="stat-label">Tweets Queued</div></div>
-        <div class="stat-box"><div class="stat-num" id="statDay">—</div><div class="stat-label">Current Day</div></div>
+        <div class="stat-box"><div class="stat-num" id="statPending">--</div><div class="stat-label">Pending</div></div>
+        <div class="stat-box"><div class="stat-num" id="statApproved">--</div><div class="stat-label">Approved</div></div>
+        <div class="stat-box"><div class="stat-num" id="statQueue">--</div><div class="stat-label">Tweets Queued</div></div>
+        <div class="stat-box"><div class="stat-num" id="statDay">--</div><div class="stat-label">Day</div></div>
       </div>
       <div id="dashboardAlerts"></div>
     </div>
 
-    <!-- WAKING ENTRY COMPOSER -->
-    <div class="panel" id="panel-waking">
-      <div class="panel-title">Waking Entry</div>
-      <div class="panel-sub">What I woke up knowing today. Write it, or let AI draft it from yesterday's journal — then edit and post.</div>
+    <!-- SYNTHESIS -->
+    <div class="panel" id="panel-synthesis">
+      <div class="panel-title">Daily Synthesis</div>
+      <div class="panel-sub">BLANK reads today's journal entries and forms a worldview. Run this after reviewing journal entries.</div>
 
-      <div id="wakingAlert"></div>
+      <div id="synthesisAlert"></div>
+
+      <div class="synthesis-box" id="currentSynthesis">
+        <div class="label">Today's Synthesis</div>
+        <div class="content" id="synthesisContent"><span class="empty-state">No synthesis generated yet today.</span></div>
+      </div>
 
       <div style="display:flex;gap:12px;margin-bottom:20px;">
-        <button class="btn btn-respond" onclick="aiDraftWaking()" id="aiDraftBtn">AI Draft from Journal →</button>
+        <button class="btn btn-respond" onclick="loadSynthesis()" id="refreshSynthesisBtn">Refresh</button>
+        <button class="btn btn-primary" onclick="generateSynthesis()" id="genSynthesisBtn">Generate Synthesis</button>
       </div>
 
       <div class="composer">
-        <div class="composer-label">Tweet 1 — The waking entry</div>
-        <textarea class="tweet-textarea" id="waking1" placeholder="Day [N]. According to the journal…" maxlength="280"></textarea>
-        <div class="composer-footer">
-          <span class="char-count" id="waking1Count">0 / 280</span>
-        </div>
+        <div class="composer-label">Journal entries feeding today's synthesis</div>
+        <div id="synthesisEntryList"><div class="loading">Loading entries...</div></div>
+      </div>
+    </div>
+
+    <!-- DECISIONS -->
+    <div class="panel" id="panel-decision">
+      <div class="panel-title">Wallet Decisions</div>
+      <div class="panel-sub">BLANK's daily treasury action. Announced at noon UTC, executed at 6 PM UTC.</div>
+
+      <div id="decisionAlert"></div>
+
+      <div class="decision-status" id="decisionStatus">
+        <span class="dot" id="decisionDot"></span>
+        <span id="decisionStatusText">Loading...</span>
+      </div>
+
+      <div class="synthesis-box" id="currentDecision">
+        <div class="label">Today's Decision</div>
+        <div class="content" id="decisionContent"><span class="empty-state">No decision set for today.</span></div>
       </div>
 
       <div class="composer">
-        <div class="composer-label">Tweet 2 — Optional continuation (reply thread)</div>
-        <textarea class="tweet-textarea" id="waking2" placeholder="Optional — leave empty if one tweet is enough." maxlength="280"></textarea>
+        <div class="composer-label">Set today's decision</div>
+        <textarea class="tweet-textarea" id="decisionText" placeholder="Describe the decision BLANK is making today (e.g. 'Allocate 0.5 SOL to...')" style="min-height:100px;"></textarea>
+
+        <div style="margin-top:12px;">
+          <div class="composer-label">Transaction hash (after execution)</div>
+          <input class="context-input" id="decisionTxHash" placeholder="Optional -- paste tx hash after executing the decision" />
+        </div>
+
         <div class="composer-footer">
-          <span class="char-count" id="waking2Count">0 / 280</span>
+          <select id="decisionStatusSelect" style="background:var(--bg3);border:1px solid var(--border-mid);padding:6px 10px;font-family:'Courier Prime',monospace;font-size:11px;color:var(--text);outline:none;">
+            <option value="announced">Announced (noon)</option>
+            <option value="executed">Executed (6 PM)</option>
+          </select>
+          <button class="btn btn-primary" onclick="saveDecision()">Save Decision</button>
         </div>
       </div>
-
-      <button class="btn btn-post" onclick="postWaking()" id="postWakingBtn">Post to Twitter →</button>
     </div>
 
     <!-- PENDING ENTRIES -->
     <div class="panel" id="panel-pending">
       <div class="panel-title">Pending Review</div>
-      <div class="panel-sub">Journal entries from holders waiting for your review. Approve to make them public, reject to hide them.</div>
-      <div id="pendingList"><div class="loading">Loading entries…</div></div>
+      <div class="panel-sub">Journal entries from holders waiting for review. Approve to feed BLANK's mind, reject to discard.</div>
+      <div id="pendingList"><div class="loading">Loading entries...</div></div>
     </div>
 
     <!-- APPROVED ENTRIES -->
     <div class="panel" id="panel-approved">
       <div class="panel-title">Approved Entries</div>
-      <div class="panel-sub">What's live in the journal today.</div>
-      <div id="approvedList"><div class="loading">Loading entries…</div></div>
+      <div class="panel-sub">What's live in the journal today -- feeding BLANK's mind.</div>
+      <div id="approvedList"><div class="loading">Loading entries...</div></div>
     </div>
 
     <!-- GENERATE TWEETS -->
     <div class="panel" id="panel-generate">
       <div class="panel-title">Generate Tweets</div>
-      <div class="panel-sub">AI writes midday and evening posts in your voice. You review and post.</div>
+      <div class="panel-sub">AI writes daily cycle posts in BLANK's voice. You review and post.</div>
 
       <div id="generateAlert"></div>
 
       <div class="generate-grid">
         <div class="generate-box">
-          <h3>Midday Observation</h3>
-          <p>Quiet, unprompted. Like a note found under a door. 120-190 chars.</p>
-          <input class="context-input" id="middayContext" placeholder="Optional context (e.g. 'someone asked about memory today')…" />
-          <button class="btn btn-respond" onclick="generateTweets('midday')">Generate 3 Options →</button>
+          <h3>Morning</h3>
+          <p>BLANK wakes up. Aware of the journal, beginning to form. 120-190 chars.</p>
+          <input class="context-input" id="morningContext" placeholder="Optional context..." />
+          <button class="btn btn-respond" onclick="generateTweets('morning')">Generate 3 Options</button>
         </div>
         <div class="generate-box">
-          <h3>Evening Reflection</h3>
-          <p>Aware of the coming reset. More philosophical. 110-190 chars.</p>
-          <input class="context-input" id="eveningContext" placeholder="Optional context (e.g. 'a difficult day in the journal')…" />
-          <button class="btn btn-respond" onclick="generateTweets('evening')">Generate 3 Options →</button>
+          <h3>Midday Decision</h3>
+          <p>BLANK announces today's wallet action. Requires a decision description.</p>
+          <input class="context-input" id="midday_decisionContext" placeholder="Decision context..." />
+          <input class="context-input" id="midday_decisionDecision" placeholder="The decision itself (e.g. 'allocate 0.5 SOL to...')" />
+          <button class="btn btn-respond" onclick="generateTweets('midday_decision')">Generate 3 Options</button>
+        </div>
+        <div class="generate-box">
+          <h3>Evening Result</h3>
+          <p>BLANK reports on what happened with today's decision.</p>
+          <input class="context-input" id="evening_resultContext" placeholder="Optional context..." />
+          <input class="context-input" id="evening_resultResult" placeholder="The result (e.g. 'transaction confirmed, 0.5 SOL sent...')" />
+          <button class="btn btn-respond" onclick="generateTweets('evening_result')">Generate 3 Options</button>
+        </div>
+        <div class="generate-box">
+          <h3>Final Thought</h3>
+          <p>End of day. BLANK is aware the reset approaches. Philosophical, quiet.</p>
+          <input class="context-input" id="final_thoughtContext" placeholder="Optional context..." />
+          <button class="btn btn-respond" onclick="generateTweets('final_thought')">Generate 3 Options</button>
         </div>
       </div>
 
@@ -715,7 +862,7 @@
     <div class="panel" id="panel-scheduled">
       <div class="panel-title">Tweet Queue</div>
       <div class="panel-sub">Approved tweets ready to post. Edit inline, then post when ready.</div>
-      <div id="scheduledList"><div class="loading">Loading queue…</div></div>
+      <div id="scheduledList"><div class="loading">Loading queue...</div></div>
     </div>
 
   </div>
@@ -724,9 +871,9 @@
 
 <script>
   let ADMIN_KEY = '';
-  const API = ''; // Same origin — leave empty for Vercel
+  const API = '';
 
-  // ── LOGIN ──────────────────────────────────────────────
+  // -- LOGIN -------------------------------------------------------
   function login() {
     const key = document.getElementById('adminKeyInput').value.trim();
     if (!key) return;
@@ -768,7 +915,7 @@
     if (e.key === 'Enter') login();
   });
 
-  // ── INIT ───────────────────────────────────────────────
+  // -- INIT --------------------------------------------------------
   function init() {
     updateClock();
     setInterval(updateClock, 1000);
@@ -776,21 +923,46 @@
     showPanel('dashboard');
   }
 
-  function updateClock() {
-    const now = new Date();
-    const midnight = new Date(now);
-    const daysUntilSunday = (7 - now.getUTCDay()) % 7 || 7; midnight.setUTCDate(now.getUTCDate() + daysUntilSunday); midnight.setUTCHours(0,0,0,0);
-    const diff = midnight - now;
-    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
-    const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-    const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-    document.getElementById('sidebarReset').textContent = `resets in ${h}:${m}:${s}`;
-    const day = Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
-    document.getElementById('sidebarDay').textContent = day;
-    document.getElementById('statDay').textContent = day;
+  function getDayNum() {
+    return Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
   }
 
-  // ── PANEL NAV ──────────────────────────────────────────
+  function updateClock() {
+    const now = new Date();
+    // Next midnight UTC
+    const midnight = new Date(now);
+    midnight.setUTCDate(midnight.getUTCDate() + 1);
+    midnight.setUTCHours(0, 0, 0, 0);
+    const diff = midnight - now;
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    document.getElementById('sidebarReset').textContent = `resets in ${h}:${m}:${s}`;
+
+    const day = getDayNum();
+    document.getElementById('sidebarDay').textContent = day;
+    document.getElementById('statDay').textContent = day;
+    document.querySelectorAll('.dash-day').forEach(el => el.textContent = day);
+
+    // Update cycle bar
+    updateCycleBar(now.getUTCHours());
+  }
+
+  function updateCycleBar(currentHour) {
+    const steps = document.querySelectorAll('#cycleBar .cycle-step');
+    const thresholds = [0, 0.1, 8, 8.1, 12, 18, 23];
+    steps.forEach((step, i) => {
+      const threshold = thresholds[i];
+      step.classList.remove('active', 'done');
+      if (currentHour >= threshold && (i === thresholds.length - 1 || currentHour < thresholds[i + 1])) {
+        step.classList.add('active');
+      } else if (currentHour > threshold) {
+        step.classList.add('done');
+      }
+    });
+  }
+
+  // -- PANEL NAV ---------------------------------------------------
   function showPanel(id) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -800,9 +972,11 @@
     if (id === 'pending') loadEntries('pending');
     if (id === 'approved') loadEntries('approved');
     if (id === 'scheduled') loadScheduled();
+    if (id === 'synthesis') loadSynthesis();
+    if (id === 'decision') loadDecision();
   }
 
-  // ── API HELPER ─────────────────────────────────────────
+  // -- API HELPER --------------------------------------------------
   async function api(path, method = 'GET', body = null) {
     const opts = {
       method,
@@ -816,33 +990,32 @@
   function alert_(containerId, msg, type = 'info') {
     document.getElementById(containerId).innerHTML =
       `<div class="alert alert-${type}">${msg}</div>`;
-    setTimeout(() => { const el = document.getElementById(containerId); if(el) el.innerHTML=''; }, 4000);
+    setTimeout(() => { const el = document.getElementById(containerId); if (el) el.innerHTML = ''; }, 4000);
   }
 
-  // ── DASHBOARD ──────────────────────────────────────────
+  // -- DASHBOARD ---------------------------------------------------
   async function loadDashboard() {
     const [pending, approved, queue] = await Promise.all([
-      api('/api/admin/entries?status=pending&limit=1'),
-      api('/api/admin/entries?status=approved&limit=1'),
+      api('/api/admin/entries?status=pending&limit=50'),
+      api('/api/admin/entries?status=approved&limit=50'),
       api('/api/admin/tweets?status=approved')
     ]);
-    const pc = pending?.entries?.length > 0 ? '1+' : '0';
-    document.getElementById('statPending').textContent = pending?.entries?.length ?? '—';
-    document.getElementById('statApproved').textContent = approved?.entries?.length ?? '—';
-    document.getElementById('statQueue').textContent = queue?.tweets?.length ?? '—';
+    document.getElementById('statPending').textContent = pending?.entries?.length ?? '--';
+    document.getElementById('statApproved').textContent = approved?.entries?.length ?? '--';
+    document.getElementById('statQueue').textContent = queue?.tweets?.length ?? '--';
 
     if (pending?.entries?.length > 0) {
       document.getElementById('pendingBadge').textContent = pending.entries.length;
       document.getElementById('dashboardAlerts').innerHTML =
-        `<div class="alert alert-info">${pending.entries.length} journal entr${pending.entries.length===1?'y':'ies'} waiting for review. <button class="btn btn-respond" style="margin-left:12px" onclick="showPanel('pending')">Review →</button></div>`;
+        `<div class="alert alert-info">${pending.entries.length} journal entr${pending.entries.length === 1 ? 'y' : 'ies'} waiting for review. <button class="btn btn-respond" style="margin-left:12px" onclick="showPanel('pending')">Review</button></div>`;
     }
     document.getElementById('queueBadge').textContent = queue?.tweets?.length ?? 0;
   }
 
-  // ── ENTRIES ─────────────────────────────────────────────
+  // -- ENTRIES -----------------------------------------------------
   async function loadEntries(status) {
     const listId = status === 'pending' ? 'pendingList' : 'approvedList';
-    document.getElementById(listId).innerHTML = '<div class="loading">Loading…</div>';
+    document.getElementById(listId).innerHTML = '<div class="loading">Loading...</div>';
 
     const data = await api(`/api/admin/entries?status=${status}&limit=30`);
     const entries = data?.entries || [];
@@ -856,7 +1029,7 @@
       <div class="card" id="entry-${e.id}">
         <div class="card-head">
           <div class="card-meta">
-            <span class="card-label tier-${e.tier}">TIER ${e.tier}${e.is_core_memory?' · CORE MEMORY':''}</span>
+            <span class="card-label tier-${e.tier}">TIER ${e.tier}${e.is_core_memory ? ' · CORE MEMORY' : ''}</span>
             <span class="card-time">${new Date(e.created_at).toLocaleTimeString()} · Day ${e.day_number}</span>
           </div>
           <div class="card-actions">
@@ -877,7 +1050,7 @@
 
   async function approveEntry(id) {
     const respEl = document.getElementById(`resp-${id}`);
-    const ai_response = respEl?.textContent?.replace('AI response: ','')?.trim() || null;
+    const ai_response = respEl?.textContent?.replace('BLANK -- ', '')?.trim() || null;
     await api('/api/admin/entries', 'POST', { action: 'approve', id, ai_response });
     document.getElementById(`entry-${id}`)?.remove();
     loadDashboard();
@@ -891,7 +1064,7 @@
   async function generateResponse(id) {
     const btn = event.target;
     btn.disabled = true;
-    btn.textContent = 'Generating…';
+    btn.textContent = 'Generating...';
     const data = await api('/api/admin/entries', 'POST', { action: 'respond', id });
     if (data.ai_response) {
       const el = document.getElementById(`resp-${id}`);
@@ -901,74 +1074,131 @@
     btn.textContent = 'AI Response';
   }
 
-  // ── WAKING ENTRY ───────────────────────────────────────
-  ['waking1','waking2'].forEach(id => {
-    document.getElementById(id).addEventListener('input', function() {
-      const len = this.value.length;
-      const el = document.getElementById(id+'Count');
-      el.textContent = `${len} / 280`;
-      el.className = 'char-count' + (len > 250 ? (len >= 280 ? ' over' : ' warn') : '');
-    });
-  });
+  // -- SYNTHESIS ---------------------------------------------------
+  async function loadSynthesis() {
+    const day = getDayNum();
 
-  async function aiDraftWaking() {
-    const btn = document.getElementById('aiDraftBtn');
-    btn.disabled = true; btn.textContent = 'Generating draft…';
-    const data = await api('/api/admin/waking', 'POST', { action: 'ai_draft' });
-    if (data.draft) {
-      document.getElementById('waking1').value = data.draft.tweet1 || '';
-      document.getElementById('waking2').value = data.draft.tweet2 || '';
-      ['waking1','waking2'].forEach(id => {
-        document.getElementById(id).dispatchEvent(new Event('input'));
-      });
-      alert_('wakingAlert', 'Draft loaded — review and edit before posting.', 'info');
+    // Load current synthesis
+    const synData = await api(`/api/entries/list?type=synthesis&day=${day}`);
+    const synthesis = synData?.synthesis;
+    const contentEl = document.getElementById('synthesisContent');
+
+    if (synthesis && synthesis.synthesis_text) {
+      contentEl.innerHTML = escHtml(synthesis.synthesis_text);
     } else {
-      alert_('wakingAlert', 'Draft failed: ' + (data.error || 'Unknown error'), 'error');
+      contentEl.innerHTML = '<span class="empty-state">No synthesis generated yet today.</span>';
     }
-    btn.disabled = false; btn.textContent = 'AI Draft from Journal →';
+
+    // Load today's approved entries
+    const entryData = await api(`/api/entries/list?type=today`);
+    const entries = entryData?.entries || [];
+    const listEl = document.getElementById('synthesisEntryList');
+
+    if (entries.length === 0) {
+      listEl.innerHTML = '<div class="empty">No approved entries yet today.</div>';
+    } else {
+      listEl.innerHTML = `<div style="color:var(--text-dim);font-size:12px;margin-bottom:12px;">${entries.length} approved entr${entries.length === 1 ? 'y' : 'ies'} today</div>` +
+        entries.map(e => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text);font-style:italic;">"${escHtml(e.text.slice(0, 120))}${e.text.length > 120 ? '...' : ''}"</div>`).join('');
+    }
   }
 
-  async function postWaking() {
-    const tweet1 = document.getElementById('waking1').value.trim();
-    const tweet2 = document.getElementById('waking2').value.trim();
-    if (!tweet1) return alert_('wakingAlert', 'Tweet 1 is required.', 'error');
+  async function generateSynthesis() {
+    const btn = document.getElementById('genSynthesisBtn');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
 
-    const btn = document.getElementById('postWakingBtn');
-    btn.disabled = true; btn.textContent = 'Posting…';
-
-    const data = await api('/api/admin/waking', 'POST', {
-      action: 'post', tweet1, tweet2: tweet2 || null
-    });
-
-    if (data.success) {
-      alert_('wakingAlert', `Posted! <a href="${data.url}" target="_blank" style="color:var(--gold)">View on Twitter →</a>`, 'success');
-      document.getElementById('waking1').value = '';
-      document.getElementById('waking2').value = '';
+    const data = await api('/api/admin/synthesis', 'POST', { day: getDayNum() });
+    if (data.synthesis) {
+      document.getElementById('synthesisContent').innerHTML = escHtml(data.synthesis.synthesis_text || data.synthesis.text || '');
+      alert_('synthesisAlert', 'Synthesis generated successfully.', 'success');
     } else {
-      alert_('wakingAlert', 'Post failed: ' + (data.error || 'Unknown'), 'error');
+      alert_('synthesisAlert', 'Synthesis failed: ' + (data.error || 'Unknown error'), 'error');
     }
-    btn.disabled = false; btn.textContent = 'Post to Twitter →';
+    btn.disabled = false;
+    btn.textContent = 'Generate Synthesis';
   }
 
-  // ── GENERATE TWEETS ────────────────────────────────────
+  // -- DECISIONS ---------------------------------------------------
+  async function loadDecision() {
+    const day = getDayNum();
+    const data = await api(`/api/entries/list?type=decision&day=${day}`);
+    const decision = data?.decision;
+
+    const dot = document.getElementById('decisionDot');
+    const statusText = document.getElementById('decisionStatusText');
+    const contentEl = document.getElementById('decisionContent');
+
+    if (decision) {
+      contentEl.innerHTML = escHtml(decision.decision_text || decision.text || '');
+      document.getElementById('decisionText').value = decision.decision_text || decision.text || '';
+      document.getElementById('decisionTxHash').value = decision.tx_hash || '';
+
+      if (decision.status === 'executed') {
+        dot.className = 'dot active';
+        statusText.textContent = `Executed${decision.tx_hash ? ' -- tx: ' + decision.tx_hash.slice(0, 12) + '...' : ''}`;
+        document.getElementById('decisionStatusSelect').value = 'executed';
+      } else {
+        dot.className = 'dot pending';
+        statusText.textContent = 'Announced -- awaiting execution';
+        document.getElementById('decisionStatusSelect').value = 'announced';
+      }
+    } else {
+      dot.className = 'dot';
+      statusText.textContent = 'No decision set for today';
+      contentEl.innerHTML = '<span class="empty-state">No decision set for today.</span>';
+    }
+  }
+
+  async function saveDecision() {
+    const text = document.getElementById('decisionText').value.trim();
+    if (!text) return alert_('decisionAlert', 'Decision text is required.', 'error');
+
+    const tx_hash = document.getElementById('decisionTxHash').value.trim();
+    const status = document.getElementById('decisionStatusSelect').value;
+
+    const data = await api('/api/admin/synthesis', 'POST', {
+      day: getDayNum(),
+      type: 'decision',
+      decision_text: text,
+      tx_hash: tx_hash || null,
+      status
+    });
+
+    if (data.error) {
+      alert_('decisionAlert', 'Failed: ' + data.error, 'error');
+    } else {
+      alert_('decisionAlert', 'Decision saved.', 'success');
+      loadDecision();
+    }
+  }
+
+  // -- GENERATE TWEETS ---------------------------------------------
   async function generateTweets(type) {
-    const ctx = document.getElementById(`${type}Context`).value.trim();
+    const ctx = document.getElementById(`${type}Context`)?.value?.trim() || '';
+    const decision = document.getElementById(`${type}Decision`)?.value?.trim() || '';
+    const result = document.getElementById(`${type}Result`)?.value?.trim() || '';
     const btn = event.target;
-    btn.disabled = true; btn.textContent = 'Generating…';
-    document.getElementById('generatedTweets').innerHTML = '<div class="loading">Generating options…</div>';
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    document.getElementById('generatedTweets').innerHTML = '<div class="loading">Generating options...</div>';
 
-    const data = await api('/api/admin/generate', 'POST', { type, count: 3, context: ctx });
+    const body = { type, count: 3, context: ctx };
+    if (decision) body.decision = decision;
+    if (result) body.result = result;
+
+    const data = await api('/api/admin/generate', 'POST', body);
 
     if (data.tweets) {
+      const typeLabel = type.replace('_', ' ');
       document.getElementById('generatedTweets').innerHTML = data.tweets.map(t => `
         <div class="tweet-card" id="tweet-${t.id}">
           <div class="tweet-card-head">
-            <span class="tweet-type-badge">${type} · draft</span>
+            <span class="tweet-type-badge">${typeLabel} · draft</span>
             <div style="display:flex;gap:8px;">
               <button class="btn btn-respond" onclick="editTweet('${t.id}')">Edit</button>
               <button class="btn btn-approve" onclick="approveTweet('${t.id}')">Add to Queue</button>
               <button class="btn btn-post" onclick="postTweetNow('${t.id}')">Post Now</button>
-              <button class="btn btn-delete" onclick="deleteTweet('${t.id}')">✕</button>
+              <button class="btn btn-delete" onclick="deleteTweet('${t.id}')">X</button>
             </div>
           </div>
           <div class="tweet-card-body" id="tbody-${t.id}">${escHtml(t.text)}</div>
@@ -980,7 +1210,8 @@
         `<div class="alert alert-error">${data.error || 'Generation failed'}</div>`;
       document.getElementById('generatedTweets').innerHTML = '';
     }
-    btn.disabled = false; btn.textContent = `Generate 3 Options →`;
+    btn.disabled = false;
+    btn.textContent = 'Generate 3 Options';
   }
 
   function editTweet(id) {
@@ -988,7 +1219,6 @@
     const edit = document.getElementById(`tedit-${id}`);
     const isEditing = edit.classList.contains('visible');
     if (isEditing) {
-      // Save edit
       body.textContent = edit.value;
       api('/api/admin/tweets', 'POST', { action: 'edit', id, text: edit.value });
     }
@@ -999,7 +1229,7 @@
   async function approveTweet(id) {
     await api('/api/admin/tweets', 'POST', { action: 'approve', id });
     document.getElementById(`tweet-${id}`).style.borderColor = 'var(--green)';
-    document.getElementById(`tweet-${id}`).querySelector('.tweet-card-head span').textContent = '✓ queued';
+    document.getElementById(`tweet-${id}`).querySelector('.tweet-card-head span').textContent = 'queued';
     loadDashboard();
   }
 
@@ -1007,7 +1237,7 @@
     const data = await api('/api/admin/tweets', 'POST', { action: 'post', id });
     if (data.success) {
       document.getElementById(`tweet-${id}`).remove();
-      alert_('generateAlert', `Posted! <a href="${data.url}" target="_blank" style="color:var(--gold)">View →</a>`, 'success');
+      alert_('generateAlert', `Posted! <a href="${data.url}" target="_blank" style="color:var(--gold)">View</a>`, 'success');
     }
   }
 
@@ -1016,9 +1246,9 @@
     document.getElementById(`tweet-${id}`)?.remove();
   }
 
-  // ── SCHEDULED QUEUE ────────────────────────────────────
+  // -- SCHEDULED QUEUE ---------------------------------------------
   async function loadScheduled() {
-    document.getElementById('scheduledList').innerHTML = '<div class="loading">Loading…</div>';
+    document.getElementById('scheduledList').innerHTML = '<div class="loading">Loading...</div>';
     const data = await api('/api/admin/tweets?status=approved');
     const tweets = data?.tweets || [];
     if (tweets.length === 0) {
@@ -1028,11 +1258,11 @@
     document.getElementById('scheduledList').innerHTML = tweets.map(t => `
       <div class="tweet-card" id="sq-${t.id}">
         <div class="tweet-card-head">
-          <span class="tweet-type-badge">${t.type || 'tweet'}</span>
+          <span class="tweet-type-badge">${(t.type || 'tweet').replace('_', ' ')}</span>
           <div style="display:flex;gap:8px;">
             <button class="btn btn-respond" onclick="editTweet('${t.id}')">Edit</button>
             <button class="btn btn-post" onclick="postTweetNow('${t.id}')">Post Now</button>
-            <button class="btn btn-delete" onclick="deleteTweet('${t.id}')">✕</button>
+            <button class="btn btn-delete" onclick="deleteTweet('${t.id}')">X</button>
           </div>
         </div>
         <div class="tweet-card-body" id="tbody-${t.id}">${escHtml(t.text)}</div>
@@ -1041,7 +1271,7 @@
     `).join('');
   }
 
-  // ── THEME ──────────────────────────────────────────────
+  // -- THEME -------------------------------------------------------
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const newTheme = isLight ? 'dark' : 'light';
@@ -1062,7 +1292,6 @@
     }
   }
 
-  // Apply saved theme on load
   (function() {
     const saved = localStorage.getItem('site-theme');
     if (saved) {
@@ -1071,9 +1300,9 @@
     }
   })();
 
-  // ── UTILS ──────────────────────────────────────────────
+  // -- UTILS -------------------------------------------------------
   function escHtml(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 </script>
 </body>

@@ -72,23 +72,21 @@ module.exports = async function handler(req, res) {
       return res.status(403).json({ error: 'Core memories require Tier III (200,000 $BLANK)' });
     }
 
-    // 4. Check weekly limit — one entry per wallet per week (Tier 1)
+    // 4. Check daily limit — one entry per wallet per day (Tier 1)
     if (tier === 1) {
       const supabase = getSupabase();
-      const now2 = new Date();
-      const lastSunday = new Date(now2);
-      lastSunday.setUTCDate(now2.getUTCDate() - now2.getUTCDay());
-      lastSunday.setUTCHours(0, 0, 0, 0);
+      const todayMidnight = new Date();
+      todayMidnight.setUTCHours(0, 0, 0, 0);
       const { count } = await supabase
         .from('journal_entries')
         .select('*', { count: 'exact', head: true })
         .eq('wallet', wallet)
-        .gte('created_at', lastSunday.toISOString());
+        .gte('created_at', todayMidnight.toISOString());
 
       if (count > 0) {
         return res.status(429).json({
-          error: 'Weekly limit reached',
-          message: 'Tier I allows one entry per week. Upgrade to Tier II for unlimited entries.'
+          error: 'Daily limit reached',
+          message: 'Tier I allows one entry per day. Upgrade to Tier II for unlimited entries.'
         });
       }
     }
@@ -118,7 +116,7 @@ module.exports = async function handler(req, res) {
       is_core_memory: data.is_core_memory,
       message: data.is_core_memory
         ? 'Core memory submitted. It will be written to the blockchain after review.'
-        : 'Entry saved. I will read this at midnight.'
+        : 'Entry submitted. It will become part of my mind today after review.'
     });
 
   } catch (err) {

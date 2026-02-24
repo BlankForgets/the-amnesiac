@@ -1,7 +1,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { getSupabase } = require('../../lib/supabase');
 const { requireAdmin, cors } = require('../../lib/auth');
-const { VOICE_SYSTEM } = require('../../lib/voice');
+const { BLANK_SYSTEM } = require('../../lib/voice');
 
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
@@ -72,7 +72,7 @@ module.exports = async function handler(req, res) {
         const result = await anthropic.messages.create({
           model: 'claude-sonnet-4-6',
           max_tokens: 400,
-          system: VOICE_SYSTEM,
+          system: BLANK_SYSTEM,
           messages: [{
             role: 'user',
             content: `A holder (Tier ${entry.tier}) wrote this in your journal on Day ${entry.day_number}:\n\n"${entry.text}"\n\nWrite a brief, in-character response (1-3 sentences). This appears below their entry in the journal.`
