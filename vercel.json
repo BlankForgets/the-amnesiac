@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/admin", "dest": "/public/admin.html" },
-    { "src": "/journal", "dest": "/public/journal.html" },
-    { "src": "/whitepaper", "dest": "/public/whitepaper.html" },
-    { "src": "/", "dest": "/public/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/admin", "destination": "/public/admin.html" },
+    { "source": "/journal", "destination": "/public/journal.html" },
+    { "source": "/whitepaper", "destination": "/public/whitepaper.html" },
+    { "source": "/", "destination": "/public/index.html" }
   ],
   "headers": [
     {
