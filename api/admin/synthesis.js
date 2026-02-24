@@ -3,7 +3,7 @@ const { getSupabase } = require('../../lib/supabase');
 const { requireAdmin, cors } = require('../../lib/auth');
 const { BLANK_SYSTEM, SYNTHESIS_PROMPT } = require('../../lib/voice');
 
-const TREASURY = '4WsUY7F2VQJ7ahB1Wo44pP82M4pCJLyyLdgT9JeYSerj';
+const TREASURY = '4VdBG5uXv1bnEJFKikzYxRVuPUfgScC4oTPj5NYTYHsg';
 const RPC = process.env.SOLANA_RPC || 'https://api.mainnet-beta.solana.com';
 const MAX_POSITION_PERCENT = 0.15;
 
