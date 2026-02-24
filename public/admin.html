@@ -587,6 +587,105 @@
   .alert-error { border-color: var(--red); color: var(--red); background: var(--alert-error-bg); }
   .alert-info { border-color: var(--accent); color: var(--accent); background: var(--alert-info-bg); }
 
+  /* TX FORM */
+  .tx-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .tx-form-grid .full { grid-column: 1 / -1; }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .form-group label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .form-group select,
+  .form-group input {
+    background: var(--bg3);
+    border: 1px solid var(--border-mid);
+    padding: 8px 10px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus { border-color: var(--accent-dim); }
+
+  .guardrail-box {
+    padding: 14px 20px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+  }
+
+  .guardrail-box .label { color: var(--text-faint); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; }
+  .guardrail-box .value { color: var(--heading); font-family: 'Playfair Display', serif; font-size: 18px; }
+  .guardrail-box .unit { color: var(--text-faint); font-size: 11px; }
+  .guardrail-box.warning { border-color: var(--red); }
+  .guardrail-box.warning .value { color: var(--red); }
+
+  .entry-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+    cursor: pointer;
+  }
+
+  .entry-checkbox:last-child { border-bottom: none; }
+  .entry-checkbox input { margin-top: 3px; accent-color: var(--accent); }
+
+  .today-tx-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .today-tx-card .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .today-tx-card .action-badge {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    color: var(--accent);
+    background: rgba(139,127,181,0.08);
+  }
+
+  .today-tx-card .details {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
   /* LOADING */
   .loading {
     color: var(--text-dim);
@@ -695,6 +794,7 @@
       <button class="nav-btn active" onclick="showPanel('dashboard')" id="nav-dashboard">Overview</button>
       <button class="nav-btn" onclick="showPanel('synthesis')" id="nav-synthesis">Synthesis</button>
       <button class="nav-btn" onclick="showPanel('decision')" id="nav-decision">Decisions</button>
+      <button class="nav-btn" onclick="showPanel('transactions')" id="nav-transactions">Transactions</button>
     </div>
 
     <div class="nav-section">
@@ -802,6 +902,89 @@
           </select>
           <button class="btn btn-primary" onclick="saveDecision()">Save Decision</button>
         </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTION LOGGER -->
+    <div class="panel" id="panel-transactions">
+      <div class="panel-title">Transaction Logger</div>
+      <div class="panel-sub">Log completed wallet transactions. Each entry links to the journal synthesis that drove the decision.</div>
+
+      <div id="txLogAlert"></div>
+
+      <!-- Position guardrail -->
+      <div class="guardrail-box" id="guardrailBox">
+        <div>
+          <div class="label">Max Position Today (15%)</div>
+          <span class="value" id="guardrailValue">--</span>
+          <span class="unit">SOL</span>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:var(--text-faint);">
+          Treasury: <span id="guardrailTreasury">--</span> SOL
+        </div>
+      </div>
+
+      <!-- Today's transactions -->
+      <div id="todayTxList"></div>
+
+      <!-- Logger form -->
+      <div class="composer" style="margin-top:16px;">
+        <div class="composer-label">Log a Transaction</div>
+        <div class="tx-form-grid">
+          <div class="form-group">
+            <label>Action</label>
+            <select id="txAction">
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+              <option value="burn">Burn</option>
+              <option value="tip">Tip</option>
+              <option value="hold">Hold</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Asset Name</label>
+            <input id="txAssetName" placeholder="e.g. SOL, BONK, WIF" />
+          </div>
+          <div class="form-group full">
+            <label>Mint Address</label>
+            <input id="txMint" placeholder="Token mint address (optional)" />
+          </div>
+          <div class="form-group">
+            <label>Amount (SOL)</label>
+            <input id="txAmount" type="number" step="0.0001" placeholder="0.0000" />
+          </div>
+          <div class="form-group">
+            <label>Entry Price (USD)</label>
+            <input id="txEntryPrice" type="number" step="0.000001" placeholder="0.000000" />
+          </div>
+          <div class="form-group">
+            <label>Exit Price (USD)</label>
+            <input id="txExitPrice" type="number" step="0.000001" placeholder="0.000000 (if selling)" />
+          </div>
+          <div class="form-group">
+            <label>P&amp;L (SOL)</label>
+            <input id="txPnlSol" type="number" step="0.0001" placeholder="0.0000" />
+          </div>
+          <div class="form-group">
+            <label>P&amp;L (%)</label>
+            <input id="txPnlPct" type="number" step="0.1" placeholder="0.0" />
+          </div>
+          <div class="form-group">
+            <label>Tx Hash</label>
+            <input id="txHash" placeholder="Solana transaction hash" />
+          </div>
+          <div class="form-group full">
+            <label>Journal Synthesis (Why)</label>
+            <input id="txSynthesis" placeholder="Auto-filled from today's synthesis" />
+          </div>
+        </div>
+
+        <div class="composer-label" style="margin-top:16px;">Influencing Journal Entries</div>
+        <div id="txEntryCheckboxes" style="max-height:200px;overflow-y:auto;margin-bottom:16px;">
+          <div class="loading">Loading entries...</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="logTransaction()" id="logTxBtn">Log Transaction</button>
       </div>
     </div>
 
@@ -974,6 +1157,7 @@
     if (id === 'scheduled') loadScheduled();
     if (id === 'synthesis') loadSynthesis();
     if (id === 'decision') loadDecision();
+    if (id === 'transactions') loadTransactionPanel();
   }
 
   // -- API HELPER --------------------------------------------------
@@ -1299,6 +1483,125 @@
       updateThemeLabel(saved);
     }
   })();
+
+  // -- TRANSACTION LOGGER ------------------------------------------
+  async function loadTransactionPanel() {
+    // Load guardrail info
+    const synthData = await api('/api/admin/synthesis');
+    if (synthData.max_position_sol !== undefined) {
+      document.getElementById('guardrailValue').textContent = synthData.max_position_sol;
+      document.getElementById('guardrailTreasury').textContent = (synthData.treasury_balance_sol || 0).toFixed(4);
+    }
+
+    // Auto-fill synthesis
+    if (synthData.synthesis?.synthesis_text) {
+      const input = document.getElementById('txSynthesis');
+      if (!input.value) input.value = synthData.synthesis.synthesis_text.slice(0, 200);
+    }
+
+    // Load today's transactions
+    const txData = await api('/api/admin/transaction');
+    const txList = document.getElementById('todayTxList');
+    const txs = txData?.transactions || [];
+    if (txs.length > 0) {
+      txList.innerHTML = txs.map(t => `
+        <div class="today-tx-card">
+          <div class="head">
+            <span class="action-badge">${t.action.toUpperCase()} ${escHtml(t.asset_name || '')}</span>
+            <span style="font-size:10px;color:var(--text-faint);">${t.date}</span>
+          </div>
+          <div class="details">
+            ${t.amount_sol ? parseFloat(t.amount_sol).toFixed(4) + ' SOL' : ''}
+            ${t.pnl_sol ? ' -- P&L: ' + (parseFloat(t.pnl_sol) > 0 ? '+' : '') + parseFloat(t.pnl_sol).toFixed(4) + ' SOL' : ''}
+            ${t.tx_hash ? ' -- <a href="https://solscan.io/tx/' + t.tx_hash + '" target="_blank" style="color:var(--accent);">view tx</a>' : ''}
+          </div>
+        </div>
+      `).join('');
+    } else {
+      txList.innerHTML = '';
+    }
+
+    // Load today's approved entries as checkboxes
+    const entryData = await api('/api/entries/list?type=today');
+    const entries = entryData?.entries || [];
+    const checkboxContainer = document.getElementById('txEntryCheckboxes');
+
+    if (entries.length === 0) {
+      checkboxContainer.innerHTML = '<div class="empty" style="padding:8px 0;">No approved entries today.</div>';
+    } else {
+      checkboxContainer.innerHTML = entries.map(e => `
+        <label class="entry-checkbox">
+          <input type="checkbox" value="${escHtml(e.text.slice(0, 200))}" />
+          <span>"${escHtml(e.text.slice(0, 120))}${e.text.length > 120 ? '...' : ''}"</span>
+        </label>
+      `).join('');
+    }
+  }
+
+  // Check amount against guardrail
+  document.addEventListener('input', function(e) {
+    if (e.target.id === 'txAmount') {
+      const amount = parseFloat(e.target.value) || 0;
+      const max = parseFloat(document.getElementById('guardrailValue').textContent) || 0;
+      const box = document.getElementById('guardrailBox');
+      if (max > 0 && amount > max) {
+        box.classList.add('warning');
+        box.querySelector('.label').textContent = 'EXCEEDS DAILY LIMIT (15%)';
+      } else {
+        box.classList.remove('warning');
+        box.querySelector('.label').textContent = 'Max Position Today (15%)';
+      }
+    }
+  });
+
+  async function logTransaction() {
+    const action = document.getElementById('txAction').value;
+    const asset_name = document.getElementById('txAssetName').value.trim();
+    const asset_mint = document.getElementById('txMint').value.trim();
+    const amount_sol = parseFloat(document.getElementById('txAmount').value) || null;
+    const entry_price_usd = parseFloat(document.getElementById('txEntryPrice').value) || null;
+    const exit_price_usd = parseFloat(document.getElementById('txExitPrice').value) || null;
+    const pnl_sol = parseFloat(document.getElementById('txPnlSol').value) || null;
+    const pnl_percent = parseFloat(document.getElementById('txPnlPct').value) || null;
+    const tx_hash = document.getElementById('txHash').value.trim();
+    const journal_synthesis = document.getElementById('txSynthesis').value.trim();
+
+    // Gather checked entries
+    const checked = Array.from(document.querySelectorAll('#txEntryCheckboxes input:checked'));
+    const influencing_entries = checked.map(c => c.value);
+
+    // Guardrail warning
+    const max = parseFloat(document.getElementById('guardrailValue').textContent) || 0;
+    if (max > 0 && amount_sol && amount_sol > max) {
+      if (!confirm(`This exceeds the daily limit. Maximum today: ${max} SOL. Continue anyway?`)) return;
+    }
+
+    const btn = document.getElementById('logTxBtn');
+    btn.disabled = true;
+    btn.textContent = 'Logging...';
+
+    const data = await api('/api/admin/transaction', 'POST', {
+      action, asset_name, asset_mint, amount_sol,
+      entry_price_usd, exit_price_usd, pnl_sol, pnl_percent,
+      tx_hash, journal_synthesis,
+      influencing_entries: influencing_entries.length > 0 ? influencing_entries : null
+    });
+
+    if (data.success) {
+      alert_('txLogAlert', 'Transaction logged successfully.', 'success');
+      // Reset form
+      ['txAssetName', 'txMint', 'txAmount', 'txEntryPrice', 'txExitPrice', 'txPnlSol', 'txPnlPct', 'txHash'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.querySelectorAll('#txEntryCheckboxes input:checked').forEach(c => c.checked = false);
+      loadTransactionPanel();
+    } else {
+      alert_('txLogAlert', 'Failed: ' + (data.error || 'Unknown error'), 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Log Transaction';
+  }
 
   // -- UTILS -------------------------------------------------------
   function escHtml(s) {

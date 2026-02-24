@@ -3,6 +3,22 @@ const { getSupabase } = require('../../lib/supabase');
 const { requireAdmin, cors } = require('../../lib/auth');
 const { BLANK_SYSTEM, SYNTHESIS_PROMPT } = require('../../lib/voice');
 
+const TREASURY = '4WsUY7F2VQJ7ahB1Wo44pP82M4pCJLyyLdgT9JeYSerj';
+const RPC = process.env.SOLANA_RPC || 'https://api.mainnet-beta.solana.com';
+const MAX_POSITION_PERCENT = 0.15;
+
+async function getTreasuryBalance() {
+  try {
+    const res = await fetch(RPC, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: [TREASURY] })
+    });
+    const data = await res.json();
+    return (data?.result?.value || 0) / 1e9;
+  } catch { return 0; }
+}
+
 module.exports = async function handler(req, res) {
   if (cors(req, res)) return;
   if (!requireAdmin(req, res)) return;
@@ -10,18 +26,24 @@ module.exports = async function handler(req, res) {
   const supabase = getSupabase();
   const dayNum = Math.max(1, Math.ceil((Date.now() - new Date('2026-03-01').getTime()) / 86400000));
 
-  // GET — fetch today's synthesis
+  // GET — fetch today's synthesis + position guardrail
   if (req.method === 'GET') {
-    const { data, error } = await supabase
-      .from('daily_synthesis')
-      .select('*')
-      .eq('day_number', dayNum)
-      .single();
+    const [synthResult, balance] = await Promise.all([
+      supabase.from('daily_synthesis').select('*').eq('day_number', dayNum).single(),
+      getTreasuryBalance()
+    ]);
 
-    if (error && error.code !== 'PGRST116') {
-      return res.status(500).json({ error: error.message });
+    if (synthResult.error && synthResult.error.code !== 'PGRST116') {
+      return res.status(500).json({ error: synthResult.error.message });
     }
-    return res.status(200).json({ synthesis: data || null, day_number: dayNum });
+
+    const maxPositionSol = parseFloat((balance * MAX_POSITION_PERCENT).toFixed(4));
+    return res.status(200).json({
+      synthesis: synthResult.data || null,
+      day_number: dayNum,
+      treasury_balance_sol: balance,
+      max_position_sol: maxPositionSol
+    });
   }
 
   // POST — generate synthesis from today's approved entries
@@ -83,7 +105,14 @@ module.exports = async function handler(req, res) {
 
       if (error) throw error;
 
-      return res.status(200).json({ synthesis: data });
+      const balance = await getTreasuryBalance();
+      const maxPositionSol = parseFloat((balance * MAX_POSITION_PERCENT).toFixed(4));
+
+      return res.status(200).json({
+        synthesis: data,
+        treasury_balance_sol: balance,
+        max_position_sol: maxPositionSol
+      });
 
     } catch (err) {
       console.error('Synthesis error:', err);

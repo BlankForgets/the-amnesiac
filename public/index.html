@@ -466,6 +466,107 @@
     font-style: italic;
   }
 
+  /* MINI DASHBOARD */
+  .mini-dash-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  .mini-stat {
+    background: var(--bg2);
+    padding: 18px 16px;
+    text-align: center;
+  }
+
+  .mini-stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--heading);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .mini-stat-value.green { color: #6aaa70; }
+  .mini-stat-value.red { color: #aa5858; }
+
+  .mini-stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .mini-decisions {
+    margin-top: 20px;
+  }
+
+  .mini-decision {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .mini-decision:last-child { border-bottom: none; }
+
+  .mini-decision .date { color: var(--text-faint); font-size: 11px; }
+  .mini-decision .action { color: var(--text-dim); }
+  .mini-decision .pnl { font-size: 11px; }
+  .mini-decision .pnl.green { color: #6aaa70; }
+  .mini-decision .pnl.red { color: #aa5858; }
+
+  .treasury-funding {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.8;
+  }
+
+  .treasury-cta {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .donate-btn-mini {
+    padding: 8px 18px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+  }
+
+  .donate-btn-mini:hover { background: var(--gold); color: var(--bg); }
+
+  .dash-link {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-dim);
+    padding-bottom: 2px;
+    transition: all 0.3s;
+  }
+
+  .dash-link:hover { color: var(--heading); border-color: var(--heading); }
+
   /* WHAT I AM */
   .what-i-am {
     font-family: 'IM Fell English', serif;
@@ -805,6 +906,9 @@
     .terminal-cta-inner { padding: 32px 20px; }
     .terminal-cta-btn { width: 100%; text-align: center; padding: 14px 20px; }
     .treasury-sol { font-size: 28px; }
+    .mini-dash-stats { grid-template-columns: 1fr 1fr 1fr; }
+    .mini-stat-value { font-size: 16px; }
+    .treasury-cta { flex-direction: column; align-items: flex-start; }
     footer { padding: 32px 20px; flex-direction: column; gap: 20px; text-align: center; }
     .footer-links { justify-content: center; flex-wrap: wrap; gap: 16px; }
     .contract-block { padding: 20px; }
@@ -822,6 +926,7 @@
     <li><a href="/journal">Journal</a></li>
     <li><a href="/terminal">Terminal</a></li>
     <li><a href="#treasury">Wallet</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>
     <li><a href="#token">$BLANK</a></li>
     <li><a href="/whitepaper">Whitepaper</a></li>
   </ul>
@@ -922,7 +1027,7 @@
   </div>
 </section>
 
-<!-- TREASURY -->
+<!-- TREASURY / MINI DASHBOARD -->
 <section id="treasury">
   <div class="section-label">BLANK's Treasury Wallet</div>
 
@@ -942,6 +1047,45 @@
       <div class="treasury-sol-label">SOL</div>
     </div>
     <div class="treasury-note">Balance refreshes every 60 seconds. All transactions are visible on-chain.</div>
+
+    <!-- Mini stats -->
+    <div class="mini-dash-stats">
+      <div class="mini-stat">
+        <div class="mini-stat-value" id="miniPnl">--</div>
+        <div class="mini-stat-label">Total P&amp;L</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-value" id="miniWinRate">--</div>
+        <div class="mini-stat-label">Win Rate</div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-value" id="miniTxCount">--</div>
+        <div class="mini-stat-label">Decisions</div>
+      </div>
+    </div>
+
+    <!-- Today's decision -->
+    <div id="todayDecision" style="display:none;padding:20px 28px;border-top:1px solid var(--border);">
+      <div style="font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Today's Decision</div>
+      <div id="todayDecisionText" style="font-style:italic;color:var(--text);font-size:13px;line-height:1.8;"></div>
+      <div id="todayDecisionInfluence" style="margin-top:8px;font-size:11px;color:var(--text-faint);font-style:italic;"></div>
+    </div>
+
+    <!-- Last 7 days -->
+    <div class="mini-decisions" id="miniDecisions" style="padding:0 28px 12px;">
+    </div>
+
+    <!-- Funding explanation -->
+    <div class="treasury-funding">
+      Funded by pump.fun creator rewards + community donations. A percentage of every $BLANK transaction feeds the treasury. Every SOL here was put by the community or earned by BLANK.
+    </div>
+
+    <!-- CTA -->
+    <div class="treasury-cta">
+      <a href="/dashboard" class="dash-link">View Full Dashboard &#x2192;</a>
+      <button class="donate-btn-mini" onclick="copyTreasuryAddr()">Donate -- Copy Address</button>
+    </div>
+    <div id="copyMsg" style="padding:0 28px 12px;font-size:11px;color:var(--green);opacity:0;transition:opacity 0.3s;"></div>
   </div>
 </section>
 
@@ -1108,6 +1252,61 @@
 
   fetchTreasuryBalance();
   setInterval(fetchTreasuryBalance, 60000);
+
+  // Mini-dashboard: wallet stats
+  async function fetchMiniDash() {
+    try {
+      const res = await fetch('/api/wallet/stats');
+      const data = await res.json();
+      const s = data.stats || {};
+
+      // Stats
+      const pnl = s.total_pnl_sol || 0;
+      const pnlEl = document.getElementById('miniPnl');
+      pnlEl.textContent = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + ' SOL';
+      pnlEl.className = 'mini-stat-value ' + (pnl >= 0 ? 'green' : 'red');
+      document.getElementById('miniWinRate').textContent = (s.win_rate || 0) + '%';
+      document.getElementById('miniTxCount').textContent = s.total_transactions || 0;
+
+      // Last 7 days of transactions
+      const txs = (data.transactions || []).slice(0, 7);
+      const container = document.getElementById('miniDecisions');
+      if (txs.length > 0) {
+        container.innerHTML = txs.map(t => {
+          const tp = parseFloat(t.pnl_sol || 0);
+          const cls = tp > 0 ? 'green' : tp < 0 ? 'red' : '';
+          return `<div class="mini-decision">
+            <span class="date">${t.date}</span>
+            <span class="action">${(t.action || '').toUpperCase()} ${t.asset_name ? t.asset_name : ''}</span>
+            <span class="pnl ${cls}">${tp !== 0 ? (tp > 0 ? '+' : '') + tp.toFixed(4) + ' SOL' : '--'}</span>
+          </div>`;
+        }).join('');
+      }
+
+      // Today's decision
+      const today = new Date().toISOString().split('T')[0];
+      const todayTx = (data.transactions || []).find(t => t.date === today);
+      if (todayTx) {
+        document.getElementById('todayDecision').style.display = 'block';
+        document.getElementById('todayDecisionText').textContent =
+          `${todayTx.action.toUpperCase()} ${todayTx.asset_name || ''} -- ${parseFloat(todayTx.amount_sol || 0).toFixed(4)} SOL`;
+        if (todayTx.journal_synthesis) {
+          document.getElementById('todayDecisionInfluence').textContent = todayTx.journal_synthesis;
+        }
+      }
+    } catch(e) {}
+  }
+  fetchMiniDash();
+  setInterval(fetchMiniDash, 60000);
+
+  function copyTreasuryAddr() {
+    navigator.clipboard.writeText(TREASURY).then(() => {
+      const el = document.getElementById('copyMsg');
+      el.textContent = 'Wallet address copied. Thank you for feeding the mind.';
+      el.style.opacity = '1';
+      setTimeout(() => { el.style.opacity = '0'; }, 3000);
+    });
+  }
 </script>
 
 <script>

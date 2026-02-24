@@ -97,5 +97,47 @@ CREATE POLICY "Public read synthesis" ON daily_synthesis
 CREATE POLICY "Public read decisions" ON daily_decisions
   FOR SELECT USING (true);
 
+-- Wallet transactions — every on-chain action BLANK has made
+CREATE TABLE IF NOT EXISTS wallet_transactions (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  date                DATE NOT NULL,
+  action              TEXT NOT NULL CHECK (action IN ('buy', 'sell', 'burn', 'tip', 'hold')),
+  asset_name          TEXT,
+  asset_mint          TEXT,
+  amount_sol          NUMERIC,
+  entry_price_usd     NUMERIC,
+  exit_price_usd      NUMERIC,
+  pnl_sol             NUMERIC,
+  pnl_percent         NUMERIC,
+  tx_hash             TEXT,
+  journal_synthesis   TEXT,
+  influencing_entries  TEXT[],
+  status              TEXT DEFAULT 'executed' CHECK (status IN ('announced', 'executed', 'failed')),
+  announced_at        TIMESTAMPTZ,
+  executed_at         TIMESTAMPTZ,
+  created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Donations received by the treasury
+CREATE TABLE IF NOT EXISTS donations (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tx_hash     TEXT,
+  amount_sol  NUMERIC,
+  note        TEXT,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_date   ON wallet_transactions(date);
+CREATE INDEX IF NOT EXISTS idx_transactions_action ON wallet_transactions(action);
+
+ALTER TABLE wallet_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read transactions" ON wallet_transactions
+  FOR SELECT USING (true);
+
+CREATE POLICY "Public read donations" ON donations
+  FOR SELECT USING (true);
+
 -- Service role (backend) bypasses RLS — no extra policy needed
 -- The SUPABASE_SERVICE_KEY bypasses RLS automatically
